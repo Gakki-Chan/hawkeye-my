@@ -1,0 +1,53 @@
+Waf: Entering directory `/home/gakki/Hawkeye/simulation/build'
+[ 687/1427] cxx: scratch/third_deadlock.cc -> build/scratch/third_deadlock.cc.1.o
+18:28:53 runner ['g++-7', '-O0', '-ggdb', '-g3', '-std=gnu++11', '-Wno-error=deprecated-declarations', '-fstrict-aliasing', '-Wstrict-aliasing', '-pthread', '-I.', '-I..', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE_PACKET_H=1', '-DHAVE_IF_TUN_H=1', '../scratch/third_deadlock.cc', '-c', '-o', 'scratch/third_deadlock.cc.1.o']
+[ 688/1427] cxx: scratch/third.cc -> build/scratch/third.cc.2.o
+18:28:53 runner ['g++-7', '-O0', '-ggdb', '-g3', '-std=gnu++11', '-Wno-error=deprecated-declarations', '-fstrict-aliasing', '-Wstrict-aliasing', '-pthread', '-I.', '-I..', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE_PACKET_H=1', '-DHAVE_IF_TUN_H=1', '../scratch/third.cc', '-c', '-o', 'scratch/third.cc.2.o']
+[ 689/1427] cxx: scratch/scratch-simulator.cc -> build/scratch/scratch-simulator.cc.3.o
+18:28:53 runner ['g++-7', '-O0', '-ggdb', '-g3', '-std=gnu++11', '-Wno-error=deprecated-declarations', '-fstrict-aliasing', '-Wstrict-aliasing', '-pthread', '-I.', '-I..', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE_PACKET_H=1', '-DHAVE_IF_TUN_H=1', '../scratch/scratch-simulator.cc', '-c', '-o', 'scratch/scratch-simulator.cc.3.o']
+[ 690/1427] cxx: scratch/subdir/scratch-simulator-subdir.cc -> build/scratch/subdir/scratch-simulator-subdir.cc.4.o
+18:28:53 runner ['g++-7', '-O0', '-ggdb', '-g3', '-std=gnu++11', '-Wno-error=deprecated-declarations', '-fstrict-aliasing', '-Wstrict-aliasing', '-pthread', '-I.', '-I..', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE_PACKET_H=1', '-DHAVE_IF_TUN_H=1', '../scratch/subdir/scratch-simulator-subdir.cc', '-c', '-o', 'scratch/subdir/scratch-simulator-subdir.cc.4.o']
+[ 691/1427] cxx: utils/test-runner.cc -> build/utils/test-runner.cc.1.o
+18:28:53 runner ['g++-7', '-O0', '-ggdb', '-g3', '-std=gnu++11', '-Wno-error=deprecated-declarations', '-fstrict-aliasing', '-Wstrict-aliasing', '-pthread', '-I.', '-I..', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE_PACKET_H=1', '-DHAVE_IF_TUN_H=1', '../utils/test-runner.cc', '-c', '-o', 'utils/test-runner.cc.1.o']
+[ 692/1427] cxx: utils/bench-simulator.cc -> build/utils/bench-simulator.cc.2.o
+18:28:53 runner ['g++-7', '-O0', '-ggdb', '-g3', '-std=gnu++11', '-Wno-error=deprecated-declarations', '-fstrict-aliasing', '-Wstrict-aliasing', '-pthread', '-I.', '-I..', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE_PACKET_H=1', '-DHAVE_IF_TUN_H=1', '../utils/bench-simulator.cc', '-c', '-o', 'utils/bench-simulator.cc.2.o']
+[ 693/1427] cxx: utils/bench-packets.cc -> build/utils/bench-packets.cc.3.o
+18:28:53 runner ['g++-7', '-O0', '-ggdb', '-g3', '-std=gnu++11', '-Wno-error=deprecated-declarations', '-fstrict-aliasing', '-Wstrict-aliasing', '-pthread', '-I.', '-I..', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE_PACKET_H=1', '-DHAVE_IF_TUN_H=1', '../utils/bench-packets.cc', '-c', '-o', 'utils/bench-packets.cc.3.o']
+[ 694/1427] cxx: utils/print-introspected-doxygen.cc -> build/utils/print-introspected-doxygen.cc.4.o
+18:28:53 runner ['g++-7', '-O0', '-ggdb', '-g3', '-std=gnu++11', '-Wno-error=deprecated-declarations', '-fstrict-aliasing', '-Wstrict-aliasing', '-pthread', '-I.', '-I..', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE_PACKET_H=1', '-DHAVE_IF_TUN_H=1', '../utils/print-introspected-doxygen.cc', '-c', '-o', 'utils/print-introspected-doxygen.cc.4.o']
+[ 695/1427] cxx: src/wimax/model/wimax-mac-to-mac-header.cc -> build/src/wimax/model/wimax-mac-to-mac-header.cc.1.o
+18:28:53 runner ['g++-7', '-O0', '-ggdb', '-g3', '-std=gnu++11', '-Wno-error=deprecated-declarations', '-fstrict-aliasing', '-Wstrict-aliasing', '-fPIC', '-pthread', '-I.', '-I..', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE_PACKET_H=1', '-DHAVE_IF_TUN_H=1', '../src/wimax/model/wimax-mac-to-mac-header.cc', '-c', '-o', 'src/wimax/model/wimax-mac-to-mac-header.cc.1.o']
+[ 696/1427] cxx: src/wimax/model/cs-parameters.cc -> build/src/wimax/model/cs-parameters.cc.1.o
+18:28:53 runner ['g++-7', '-O0', '-ggdb', '-g3', '-std=gnu++11', '-Wno-error=deprecated-declarations', '-fstrict-aliasing', '-Wstrict-aliasing', '-fPIC', '-pthread', '-I.', '-I..', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE_PACKET_H=1', '-DHAVE_IF_TUN_H=1', '../src/wimax/model/cs-parameters.cc', '-c', '-o', 'src/wimax/model/cs-parameters.cc.1.o']
+[ 697/1427] cxx: src/wimax/model/wimax-tlv.cc -> build/src/wimax/model/wimax-tlv.cc.1.o
+18:28:53 runner ['g++-7', '-O0', '-ggdb', '-g3', '-std=gnu++11', '-Wno-error=deprecated-declarations', '-fstrict-aliasing', '-Wstrict-aliasing', '-fPIC', '-pthread', '-I.', '-I..', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE_PACKET_H=1', '-DHAVE_IF_TUN_H=1', '../src/wimax/model/wimax-tlv.cc', '-c', '-o', 'src/wimax/model/wimax-tlv.cc.1.o']
+[ 698/1427] cxx: src/wimax/model/ipcs-classifier-record.cc -> build/src/wimax/model/ipcs-classifier-record.cc.1.o
+18:28:53 runner ['g++-7', '-O0', '-ggdb', '-g3', '-std=gnu++11', '-Wno-error=deprecated-declarations', '-fstrict-aliasing', '-Wstrict-aliasing', '-fPIC', '-pthread', '-I.', '-I..', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE_PACKET_H=1', '-DHAVE_IF_TUN_H=1', '../src/wimax/model/ipcs-classifier-record.cc', '-c', '-o', 'src/wimax/model/ipcs-classifier-record.cc.1.o']
+[ 699/1427] cxx: src/wimax/model/ipcs-classifier.cc -> build/src/wimax/model/ipcs-classifier.cc.1.o
+18:28:54 runner ['g++-7', '-O0', '-ggdb', '-g3', '-std=gnu++11', '-Wno-error=deprecated-declarations', '-fstrict-aliasing', '-Wstrict-aliasing', '-fPIC', '-pthread', '-I.', '-I..', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE_PACKET_H=1', '-DHAVE_IF_TUN_H=1', '../src/wimax/model/ipcs-classifier.cc', '-c', '-o', 'src/wimax/model/ipcs-classifier.cc.1.o']
+[ 700/1427] cxx: src/wimax/model/bs-service-flow-manager.cc -> build/src/wimax/model/bs-service-flow-manager.cc.1.o
+18:28:54 runner ['g++-7', '-O0', '-ggdb', '-g3', '-std=gnu++11', '-Wno-error=deprecated-declarations', '-fstrict-aliasing', '-Wstrict-aliasing', '-fPIC', '-pthread', '-I.', '-I..', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE_PACKET_H=1', '-DHAVE_IF_TUN_H=1', '../src/wimax/model/bs-service-flow-manager.cc', '-c', '-o', 'src/wimax/model/bs-service-flow-manager.cc.1.o']
+[ 701/1427] cxx: src/wimax/model/crc8.cc -> build/src/wimax/model/crc8.cc.1.o
+18:28:54 runner ['g++-7', '-O0', '-ggdb', '-g3', '-std=gnu++11', '-Wno-error=deprecated-declarations', '-fstrict-aliasing', '-Wstrict-aliasing', '-fPIC', '-pthread', '-I.', '-I..', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE_PACKET_H=1', '-DHAVE_IF_TUN_H=1', '../src/wimax/model/crc8.cc', '-c', '-o', 'src/wimax/model/crc8.cc.1.o']
+[ 702/1427] cxx: src/wimax/model/service-flow-record.cc -> build/src/wimax/model/service-flow-record.cc.1.o
+18:28:54 runner ['g++-7', '-O0', '-ggdb', '-g3', '-std=gnu++11', '-Wno-error=deprecated-declarations', '-fstrict-aliasing', '-Wstrict-aliasing', '-fPIC', '-pthread', '-I.', '-I..', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE_PACKET_H=1', '-DHAVE_IF_TUN_H=1', '../src/wimax/model/service-flow-record.cc', '-c', '-o', 'src/wimax/model/service-flow-record.cc.1.o']
+In file included from ../utils/print-introspected-doxygen.cc:9:0:
+../utils/print-introspected-doxygen.cc: In member function ‘void StaticInformation::DoGather(ns3::TypeId)’:
+./ns3/log.h:322:44: error: ambiguous overload for ‘operator<<’ (operand types are ‘ns3::ParameterLogger’ and ‘StaticInformation*’)
+           ns3::ParameterLogger (std::clog) << parameters;      \
+../utils/print-introspected-doxygen.cc:269:3: note: in expansion of macro ‘NS_LOG_FUNCTION’
+   NS_LOG_FUNCTION (this);
+   ^~~~~~~~~~~~~~~
+./ns3/log.h:409:20: note: candidate: ns3::ParameterLogger& ns3::ParameterLogger::operator<<(T) [with T = StaticInformation*]
+   ParameterLogger& operator<< (T param)
+                    ^~~~~~~~
+In file included from /usr/include/c++/7/iostream:39:0,
+                 from ../utils/print-introspected-doxygen.cc:1:
+/usr/include/c++/7/ostream:682:5: note: candidate: typename std::enable_if<std::__and_<std::__not_<std::is_lvalue_reference<_Tp> >, std::__is_convertible_to_basic_ostream<_Ostream>, std::__is_insertable<typename std::__is_convertible_to_basic_ostream<_Tp>::__ostream_type, const _Tp&, void> >::value, typename std::__is_convertible_to_basic_ostream<_Tp>::__ostream_type>::type std::operator<<(_Ostream&&, const _Tp&) [with _Ostream = ns3::ParameterLogger; _Tp = StaticInformation*; typename std::enable_if<std::__and_<std::__not_<std::is_lvalue_reference<_Tp> >, std::__is_convertible_to_basic_ostream<_Ostream>, std::__is_insertable<typename std::__is_convertible_to_basic_ostream<_Tp>::__ostream_type, const _Tp&, void> >::value, typename std::__is_convertible_to_basic_ostream<_Tp>::__ostream_type>::type = std::basic_ostream<char>&]
+     operator<<(_Ostream&& __os, const _Tp& __x)
+     ^~~~~~~~
+Waf: Leaving directory `/home/gakki/Hawkeye/simulation/build'
+Build failed
+ -> task in 'print-introspected-doxygen' failed (exit status 1): 
+	{task 129949454419664: cxx print-introspected-doxygen.cc -> print-introspected-doxygen.cc.4.o}
+['g++-7', '-O0', '-ggdb', '-g3', '-std=gnu++11', '-Wno-error=deprecated-declarations', '-fstrict-aliasing', '-Wstrict-aliasing', '-pthread', '-I.', '-I..', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE_PACKET_H=1', '-DHAVE_IF_TUN_H=1', '../utils/print-introspected-doxygen.cc', '-c', '-o', 'utils/print-introspected-doxygen.cc.4.o']

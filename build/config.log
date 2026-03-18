@@ -1,0 +1,536 @@
+# project ns (3.18) configured on Wed Mar 18 18:50:11 2026 by
+# waf 1.7.11 (abi 98, python 20712f0 on linux2)
+# using ./waf configure --disable-python --disable-examples --disable-tests --enable-modules=core,network,internet,point-to-point,applications,stats
+#
+----------------------------------------
+Setting top to
+/home/gakki/Hawkeye/simulation
+----------------------------------------
+Setting out to
+/home/gakki/Hawkeye/simulation/build
+----------------------------------------
+Checking for 'gcc' (c compiler)
+find program=['gcc', 'cc'] paths='' var='CC' -> 'gcc-7'
+find program=['ar'] paths=['/usr/local/sbin', '/usr/local/bin', '/usr/sbin', '/usr/bin', '/sbin', '/bin', '/usr/games', '/usr/local/games', '/usr/lib/wsl/lib', '/mnt/c/Users/32913/miniconda3', '/mnt/c/Users/32913/miniconda3/Library/mingw-w64/bin', '/mnt/c/Users/32913/miniconda3/Library/usr/bin', '/mnt/c/Users/32913/miniconda3/Library/bin', '/mnt/c/Users/32913/miniconda3/Scripts', '/mnt/c/Users/32913/miniconda3/bin', '/mnt/d/Git/usr/bin', '/mnt/c/Program Files (x86)/CMake/bin', '/mnt/c/Program Files (x86)/VMware/VMware Workstation/bin', '/mnt/c/x86_64-elf-tools-windows/bin', '/mnt/d/Git/bin', '/mnt/d/Maven/apache-maven-3.9.9/bin', '/mnt/d/Program Files/Scripts', '/mnt/c/Program Files (x86)/qemu', '/mnt/d/Program Files', '/mnt/c/Users/32913/miniconda3', '/mnt/c/Users/32913/miniconda3/Scripts', '/mnt/c/Users/32913/miniconda3/condabin', '/mnt/d/Program Files/Java/jdk-17/bin', '/mnt/c/Program Files/Common Files/Oracle/Java/javapath', '/mnt/c/WINDOWS/system32', '/mnt/c/WINDOWS', '/mnt/c/WINDOWS/System32/Wbem', '/mnt/c/WINDOWS/System32/WindowsPowerShell/v1.0', '/mnt/c/WINDOWS/System32/OpenSSH', '/mnt/c/Program Files/Bandizip', '/mnt/d/Program Files/msys64/mingw64/bin', '/mnt/c/Program Files/MySQL/MySQL Server 8.0/bin', '/mnt/c/Program Files/Pandoc', '/mnt/d/netcat-win32-1.11 (1)/netcat-1.11', '/mnt/d/tomcat/apache-tomcat-10.1.28-windows-x64/apache-tomcat-10.1.28/bin', '/mnt/d/ctf', '/mnt/c/TDM-GCC-32/bin', '/mnt/c/Program Files/JetBrains/CLion 2024.3.4/bin/cmake/win/x64/bin', '/mnt/c/Program Files/IDM Computer Solutions/UltraEdit', '/mnt/c/Program Files/IDM Computer Solutions/UltraCompare', '/mnt/c/Program Files/JetBrains/CLion 2024.3.4/bin/mingw/bin', '/mnt/c/Users/32913/Downloads/chromedriver-win64/chromedriver-win64', '/mnt/c/Users/32913/AppData/Local/Programs/cursor/resources/app/bin', '/mnt/c/Users/32913/AppData/Local/Programs/cursor/resources/app/bin', '/mnt/c/Program Files/dotnet', '/mnt/c/texlive/2025/bin/windows', '/mnt/c/Users/32913/AppData/Local/Microsoft/WindowsApps', '/mnt/d/Program Files/Microsoft VS Code/bin', '/mnt/d/Program Files/JetBrains/IntelliJ IDEA 2023.3.6/bin', '/mnt/d/Program Files/CLion 2024.1/bin', '/mnt/c/Users/32913/AppData/Local/JetBrains/Toolbox/scripts', '/mnt/c/Program Files/JetBrains/PyCharm 2025.1/bin', '/mnt/c/Program Files/JetBrains/CLion 2024.3.4/bin', '/mnt/c/Users/32913/AppData/Local/Microsoft/WindowsApps', '/mnt/c/Users/32913/AppData/Local/Programs/cursor/resources/app/bin', '/mnt/c/Users/32913/AppData/Local/Programs/MiKTeX/miktex/bin/x64', '/mnt/c/Program Files/JetBrains/JetBrains Gateway 2025.2/bin'] var='AR' -> '/usr/bin/ar'
+gcc-7
+----------------------------------------
+Checking for 'g++' (c++ compiler)
+find program=['g++', 'c++'] paths='' var='CXX' -> 'g++-7'
+(tool ar is already loaded, skipping)
+g++-7
+---------------------------------------------------------
+Checking for compilation flag -Wl,--soname=foo... support
+==>
+#include <stdio.h>
+int main() { return 0; }
+
+<==
+[1/2] [32mcxx: build/.conf_check_fe0ca542f39064c5a14ee41a2e983996/test.cc -> build/.conf_check_fe0ca542f39064c5a14ee41a2e983996/testbuild/test.cc.1.o
+[0m
+['g++-7', '-O0', '-ggdb', '-g3', '-std=gnu++11', '-Wl,--soname=foo', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '../test.cc', '-c', '-o', 'test.cc.1.o']
+[2/2] [33mcxxprogram: build/.conf_check_fe0ca542f39064c5a14ee41a2e983996/testbuild/test.cc.1.o -> build/.conf_check_fe0ca542f39064c5a14ee41a2e983996/testbuild/testprog
+[0m
+['g++-7', 'test.cc.1.o', '-o', '/home/gakki/Hawkeye/simulation/build/.conf_check_fe0ca542f39064c5a14ee41a2e983996/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic']
+ok
+---------------------------------------------------------
+Checking boost includes
+from /home/gakki/Hawkeye/simulation/src: headers not found, please provide a --boost-includes argument (see help)
+not found
+---------------------------------------------------------
+Checking boost includes
+from /home/gakki/Hawkeye/simulation/src: headers not found, please provide a --boost-includes argument (see help)
+not found
+---------------------------------------------------------
+Checking for click location
+not found
+---------------------------------------------------------
+Checking for program pkg-config
+not found
+find program=['pkg-config'] paths=['/usr/local/sbin', '/usr/local/bin', '/usr/sbin', '/usr/bin', '/sbin', '/bin', '/usr/games', '/usr/local/games', '/usr/lib/wsl/lib', '/mnt/c/Users/32913/miniconda3', '/mnt/c/Users/32913/miniconda3/Library/mingw-w64/bin', '/mnt/c/Users/32913/miniconda3/Library/usr/bin', '/mnt/c/Users/32913/miniconda3/Library/bin', '/mnt/c/Users/32913/miniconda3/Scripts', '/mnt/c/Users/32913/miniconda3/bin', '/mnt/d/Git/usr/bin', '/mnt/c/Program Files (x86)/CMake/bin', '/mnt/c/Program Files (x86)/VMware/VMware Workstation/bin', '/mnt/c/x86_64-elf-tools-windows/bin', '/mnt/d/Git/bin', '/mnt/d/Maven/apache-maven-3.9.9/bin', '/mnt/d/Program Files/Scripts', '/mnt/c/Program Files (x86)/qemu', '/mnt/d/Program Files', '/mnt/c/Users/32913/miniconda3', '/mnt/c/Users/32913/miniconda3/Scripts', '/mnt/c/Users/32913/miniconda3/condabin', '/mnt/d/Program Files/Java/jdk-17/bin', '/mnt/c/Program Files/Common Files/Oracle/Java/javapath', '/mnt/c/WINDOWS/system32', '/mnt/c/WINDOWS', '/mnt/c/WINDOWS/System32/Wbem', '/mnt/c/WINDOWS/System32/WindowsPowerShell/v1.0', '/mnt/c/WINDOWS/System32/OpenSSH', '/mnt/c/Program Files/Bandizip', '/mnt/d/Program Files/msys64/mingw64/bin', '/mnt/c/Program Files/MySQL/MySQL Server 8.0/bin', '/mnt/c/Program Files/Pandoc', '/mnt/d/netcat-win32-1.11 (1)/netcat-1.11', '/mnt/d/tomcat/apache-tomcat-10.1.28-windows-x64/apache-tomcat-10.1.28/bin', '/mnt/d/ctf', '/mnt/c/TDM-GCC-32/bin', '/mnt/c/Program Files/JetBrains/CLion 2024.3.4/bin/cmake/win/x64/bin', '/mnt/c/Program Files/IDM Computer Solutions/UltraEdit', '/mnt/c/Program Files/IDM Computer Solutions/UltraCompare', '/mnt/c/Program Files/JetBrains/CLion 2024.3.4/bin/mingw/bin', '/mnt/c/Users/32913/Downloads/chromedriver-win64/chromedriver-win64', '/mnt/c/Users/32913/AppData/Local/Programs/cursor/resources/app/bin', '/mnt/c/Users/32913/AppData/Local/Programs/cursor/resources/app/bin', '/mnt/c/Program Files/dotnet', '/mnt/c/texlive/2025/bin/windows', '/mnt/c/Users/32913/AppData/Local/Microsoft/WindowsApps', '/mnt/d/Program Files/Microsoft VS Code/bin', '/mnt/d/Program Files/JetBrains/IntelliJ IDEA 2023.3.6/bin', '/mnt/d/Program Files/CLion 2024.1/bin', '/mnt/c/Users/32913/AppData/Local/JetBrains/Toolbox/scripts', '/mnt/c/Program Files/JetBrains/PyCharm 2025.1/bin', '/mnt/c/Program Files/JetBrains/CLion 2024.3.4/bin', '/mnt/c/Users/32913/AppData/Local/Microsoft/WindowsApps', '/mnt/c/Users/32913/AppData/Local/Programs/cursor/resources/app/bin', '/mnt/c/Users/32913/AppData/Local/Programs/MiKTeX/miktex/bin/x64', '/mnt/c/Program Files/JetBrains/JetBrains Gateway 2025.2/bin'] var='PKGCONFIG' -> ''
+from /home/gakki/Hawkeye/simulation/src/config-store: Could not find the program pkg-config
+---------------------------------------------------------
+Checking for program pkg-config
+not found
+find program=['pkg-config'] paths=['/usr/local/sbin', '/usr/local/bin', '/usr/sbin', '/usr/bin', '/sbin', '/bin', '/usr/games', '/usr/local/games', '/usr/lib/wsl/lib', '/mnt/c/Users/32913/miniconda3', '/mnt/c/Users/32913/miniconda3/Library/mingw-w64/bin', '/mnt/c/Users/32913/miniconda3/Library/usr/bin', '/mnt/c/Users/32913/miniconda3/Library/bin', '/mnt/c/Users/32913/miniconda3/Scripts', '/mnt/c/Users/32913/miniconda3/bin', '/mnt/d/Git/usr/bin', '/mnt/c/Program Files (x86)/CMake/bin', '/mnt/c/Program Files (x86)/VMware/VMware Workstation/bin', '/mnt/c/x86_64-elf-tools-windows/bin', '/mnt/d/Git/bin', '/mnt/d/Maven/apache-maven-3.9.9/bin', '/mnt/d/Program Files/Scripts', '/mnt/c/Program Files (x86)/qemu', '/mnt/d/Program Files', '/mnt/c/Users/32913/miniconda3', '/mnt/c/Users/32913/miniconda3/Scripts', '/mnt/c/Users/32913/miniconda3/condabin', '/mnt/d/Program Files/Java/jdk-17/bin', '/mnt/c/Program Files/Common Files/Oracle/Java/javapath', '/mnt/c/WINDOWS/system32', '/mnt/c/WINDOWS', '/mnt/c/WINDOWS/System32/Wbem', '/mnt/c/WINDOWS/System32/WindowsPowerShell/v1.0', '/mnt/c/WINDOWS/System32/OpenSSH', '/mnt/c/Program Files/Bandizip', '/mnt/d/Program Files/msys64/mingw64/bin', '/mnt/c/Program Files/MySQL/MySQL Server 8.0/bin', '/mnt/c/Program Files/Pandoc', '/mnt/d/netcat-win32-1.11 (1)/netcat-1.11', '/mnt/d/tomcat/apache-tomcat-10.1.28-windows-x64/apache-tomcat-10.1.28/bin', '/mnt/d/ctf', '/mnt/c/TDM-GCC-32/bin', '/mnt/c/Program Files/JetBrains/CLion 2024.3.4/bin/cmake/win/x64/bin', '/mnt/c/Program Files/IDM Computer Solutions/UltraEdit', '/mnt/c/Program Files/IDM Computer Solutions/UltraCompare', '/mnt/c/Program Files/JetBrains/CLion 2024.3.4/bin/mingw/bin', '/mnt/c/Users/32913/Downloads/chromedriver-win64/chromedriver-win64', '/mnt/c/Users/32913/AppData/Local/Programs/cursor/resources/app/bin', '/mnt/c/Users/32913/AppData/Local/Programs/cursor/resources/app/bin', '/mnt/c/Program Files/dotnet', '/mnt/c/texlive/2025/bin/windows', '/mnt/c/Users/32913/AppData/Local/Microsoft/WindowsApps', '/mnt/d/Program Files/Microsoft VS Code/bin', '/mnt/d/Program Files/JetBrains/IntelliJ IDEA 2023.3.6/bin', '/mnt/d/Program Files/CLion 2024.1/bin', '/mnt/c/Users/32913/AppData/Local/JetBrains/Toolbox/scripts', '/mnt/c/Program Files/JetBrains/PyCharm 2025.1/bin', '/mnt/c/Program Files/JetBrains/CLion 2024.3.4/bin', '/mnt/c/Users/32913/AppData/Local/Microsoft/WindowsApps', '/mnt/c/Users/32913/AppData/Local/Programs/cursor/resources/app/bin', '/mnt/c/Users/32913/AppData/Local/Programs/MiKTeX/miktex/bin/x64', '/mnt/c/Program Files/JetBrains/JetBrains Gateway 2025.2/bin'] var='PKGCONFIG' -> ''
+from /home/gakki/Hawkeye/simulation/src/config-store: Could not find the program pkg-config
+---------------------------------------------------------
+Checking for type uint128_t
+==>
+#include <stdint.h>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	if ((uint128_t *) 0) return 0;
+	if (sizeof (uint128_t)) return 0;
+	return 1;
+}
+
+<==
+[1/2] [32mcxx: build/.conf_check_656b178ce7442053dff90315b31a1cc5/test.cpp -> build/.conf_check_656b178ce7442053dff90315b31a1cc5/testbuild/test.cpp.1.o
+[0m
+['g++-7', '-O0', '-ggdb', '-g3', '-std=gnu++11', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '../test.cpp', '-c', '-o', 'test.cpp.1.o']
+err: ../test.cpp: In function ‘int main(int, char**)’:
+../test.cpp:5:7: error: ‘uint128_t’ was not declared in this scope
+  if ((uint128_t *) 0) return 0;
+       ^~~~~~~~~
+../test.cpp:5:7: note: suggested alternative: ‘uint32_t’
+  if ((uint128_t *) 0) return 0;
+       ^~~~~~~~~
+       uint32_t
+../test.cpp:5:18: error: expected primary-expression before ‘)’ token
+  if ((uint128_t *) 0) return 0;
+                  ^
+../test.cpp:5:20: error: expected ‘)’ before numeric constant
+  if ((uint128_t *) 0) return 0;
+                    ^
+../test.cpp:6:14: error: ‘uint128_t’ was not declared in this scope
+  if (sizeof (uint128_t)) return 0;
+              ^~~~~~~~~
+../test.cpp:6:14: note: suggested alternative: ‘uint32_t’
+  if (sizeof (uint128_t)) return 0;
+              ^~~~~~~~~
+              uint32_t
+
+from /home/gakki/Hawkeye/simulation/src/core: Test does not build: Traceback (most recent call last):
+  File "/home/gakki/Hawkeye/simulation/.waf-1.7.11-edc6ccb516c5e3f9b892efc9f53a610f/waflib/Tools/c_config.py", line 459, in run_c_code
+    bld.compile()
+  File "/home/gakki/Hawkeye/simulation/.waf-1.7.11-edc6ccb516c5e3f9b892efc9f53a610f/waflib/Build.py", line 188, in compile
+    raise Errors.BuildError(self.producer.error)
+BuildError: Build failed
+ -> task in 'testprog' failed (exit status 1): 
+	{task 133725440103696: cxx test.cpp -> test.cpp.1.o}
+['g++-7', '-O0', '-ggdb', '-g3', '-std=gnu++11', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '../test.cpp', '-c', '-o', 'test.cpp.1.o']
+
+not found
+from /home/gakki/Hawkeye/simulation/src/core: The configuration failed
+---------------------------------------------------------
+Checking for type __uint128_t
+==>
+#include <stdint.h>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	if ((__uint128_t *) 0) return 0;
+	if (sizeof (__uint128_t)) return 0;
+	return 1;
+}
+
+<==
+[1/2] [32mcxx: build/.conf_check_ace1886511f08627ee2e4ca020806295/test.cpp -> build/.conf_check_ace1886511f08627ee2e4ca020806295/testbuild/test.cpp.1.o
+[0m
+['g++-7', '-O0', '-ggdb', '-g3', '-std=gnu++11', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '../test.cpp', '-c', '-o', 'test.cpp.1.o']
+[2/2] [33mcxxprogram: build/.conf_check_ace1886511f08627ee2e4ca020806295/testbuild/test.cpp.1.o -> build/.conf_check_ace1886511f08627ee2e4ca020806295/testbuild/testprog
+[0m
+['g++-7', 'test.cpp.1.o', '-o', '/home/gakki/Hawkeye/simulation/build/.conf_check_ace1886511f08627ee2e4ca020806295/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic']
+yes
+---------------------------------------------------------
+Checking high precision time implementation
+128-bit integer
+---------------------------------------------------------
+Checking for header stdint.h
+==>
+#include <stdint.h>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] [32mcxx: build/.conf_check_fa0c4ec9c63ac505501cc0863d9bdc48/test.cpp -> build/.conf_check_fa0c4ec9c63ac505501cc0863d9bdc48/testbuild/test.cpp.1.o
+[0m
+['g++-7', '-O0', '-ggdb', '-g3', '-std=gnu++11', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE___UINT128_T=1', '-DINT64X64_USE_128=1', '../test.cpp', '-c', '-o', 'test.cpp.1.o']
+[2/2] [33mcxxprogram: build/.conf_check_fa0c4ec9c63ac505501cc0863d9bdc48/testbuild/test.cpp.1.o -> build/.conf_check_fa0c4ec9c63ac505501cc0863d9bdc48/testbuild/testprog
+[0m
+['g++-7', 'test.cpp.1.o', '-o', '/home/gakki/Hawkeye/simulation/build/.conf_check_fa0c4ec9c63ac505501cc0863d9bdc48/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic']
+yes
+---------------------------------------------------------
+Checking for header inttypes.h
+==>
+#include <inttypes.h>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] [32mcxx: build/.conf_check_7c67b81911f8bf0aede92c843d0e47cf/test.cpp -> build/.conf_check_7c67b81911f8bf0aede92c843d0e47cf/testbuild/test.cpp.1.o
+[0m
+['g++-7', '-O0', '-ggdb', '-g3', '-std=gnu++11', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE___UINT128_T=1', '-DINT64X64_USE_128=1', '-DHAVE_STDINT_H=1', '../test.cpp', '-c', '-o', 'test.cpp.1.o']
+[2/2] [33mcxxprogram: build/.conf_check_7c67b81911f8bf0aede92c843d0e47cf/testbuild/test.cpp.1.o -> build/.conf_check_7c67b81911f8bf0aede92c843d0e47cf/testbuild/testprog
+[0m
+['g++-7', 'test.cpp.1.o', '-o', '/home/gakki/Hawkeye/simulation/build/.conf_check_7c67b81911f8bf0aede92c843d0e47cf/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic']
+yes
+---------------------------------------------------------
+Checking for header sys/inttypes.h
+==>
+#include <sys/inttypes.h>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] [32mcxx: build/.conf_check_61ecbfef21667d45a28decabe37fdf64/test.cpp -> build/.conf_check_61ecbfef21667d45a28decabe37fdf64/testbuild/test.cpp.1.o
+[0m
+['g++-7', '-O0', '-ggdb', '-g3', '-std=gnu++11', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE___UINT128_T=1', '-DINT64X64_USE_128=1', '-DHAVE_STDINT_H=1', '-DHAVE_INTTYPES_H=1', '../test.cpp', '-c', '-o', 'test.cpp.1.o']
+err: ../test.cpp:1:10: fatal error: sys/inttypes.h: No such file or directory
+ #include <sys/inttypes.h>
+          ^~~~~~~~~~~~~~~~
+compilation terminated.
+
+from /home/gakki/Hawkeye/simulation/src/core: Test does not build: Traceback (most recent call last):
+  File "/home/gakki/Hawkeye/simulation/.waf-1.7.11-edc6ccb516c5e3f9b892efc9f53a610f/waflib/Tools/c_config.py", line 459, in run_c_code
+    bld.compile()
+  File "/home/gakki/Hawkeye/simulation/.waf-1.7.11-edc6ccb516c5e3f9b892efc9f53a610f/waflib/Build.py", line 188, in compile
+    raise Errors.BuildError(self.producer.error)
+BuildError: Build failed
+ -> task in 'testprog' failed (exit status 1): 
+	{task 133725440246864: cxx test.cpp -> test.cpp.1.o}
+['g++-7', '-O0', '-ggdb', '-g3', '-std=gnu++11', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE___UINT128_T=1', '-DINT64X64_USE_128=1', '-DHAVE_STDINT_H=1', '-DHAVE_INTTYPES_H=1', '../test.cpp', '-c', '-o', 'test.cpp.1.o']
+
+not found
+from /home/gakki/Hawkeye/simulation/src/core: The configuration failed
+---------------------------------------------------------
+Checking for header sys/types.h
+==>
+#include <sys/types.h>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] [32mcxx: build/.conf_check_8d38681417ac64f5b5b7d4ca87b0e4f3/test.cpp -> build/.conf_check_8d38681417ac64f5b5b7d4ca87b0e4f3/testbuild/test.cpp.1.o
+[0m
+['g++-7', '-O0', '-ggdb', '-g3', '-std=gnu++11', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE___UINT128_T=1', '-DINT64X64_USE_128=1', '-DHAVE_STDINT_H=1', '-DHAVE_INTTYPES_H=1', '../test.cpp', '-c', '-o', 'test.cpp.1.o']
+[2/2] [33mcxxprogram: build/.conf_check_8d38681417ac64f5b5b7d4ca87b0e4f3/testbuild/test.cpp.1.o -> build/.conf_check_8d38681417ac64f5b5b7d4ca87b0e4f3/testbuild/testprog
+[0m
+['g++-7', 'test.cpp.1.o', '-o', '/home/gakki/Hawkeye/simulation/build/.conf_check_8d38681417ac64f5b5b7d4ca87b0e4f3/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic']
+yes
+---------------------------------------------------------
+Checking for header sys/stat.h
+==>
+#include <sys/stat.h>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] [32mcxx: build/.conf_check_8dd79274749d59bf459dfbeb1200c7d7/test.cpp -> build/.conf_check_8dd79274749d59bf459dfbeb1200c7d7/testbuild/test.cpp.1.o
+[0m
+['g++-7', '-O0', '-ggdb', '-g3', '-std=gnu++11', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE___UINT128_T=1', '-DINT64X64_USE_128=1', '-DHAVE_STDINT_H=1', '-DHAVE_INTTYPES_H=1', '-DHAVE_SYS_TYPES_H=1', '../test.cpp', '-c', '-o', 'test.cpp.1.o']
+[2/2] [33mcxxprogram: build/.conf_check_8dd79274749d59bf459dfbeb1200c7d7/testbuild/test.cpp.1.o -> build/.conf_check_8dd79274749d59bf459dfbeb1200c7d7/testbuild/testprog
+[0m
+['g++-7', 'test.cpp.1.o', '-o', '/home/gakki/Hawkeye/simulation/build/.conf_check_8dd79274749d59bf459dfbeb1200c7d7/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic']
+yes
+---------------------------------------------------------
+Checking for header dirent.h
+==>
+#include <dirent.h>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] [32mcxx: build/.conf_check_c94d96928742c001335a0559791a93d8/test.cpp -> build/.conf_check_c94d96928742c001335a0559791a93d8/testbuild/test.cpp.1.o
+[0m
+['g++-7', '-O0', '-ggdb', '-g3', '-std=gnu++11', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE___UINT128_T=1', '-DINT64X64_USE_128=1', '-DHAVE_STDINT_H=1', '-DHAVE_INTTYPES_H=1', '-DHAVE_SYS_TYPES_H=1', '-DHAVE_SYS_STAT_H=1', '../test.cpp', '-c', '-o', 'test.cpp.1.o']
+[2/2] [33mcxxprogram: build/.conf_check_c94d96928742c001335a0559791a93d8/testbuild/test.cpp.1.o -> build/.conf_check_c94d96928742c001335a0559791a93d8/testbuild/testprog
+[0m
+['g++-7', 'test.cpp.1.o', '-o', '/home/gakki/Hawkeye/simulation/build/.conf_check_c94d96928742c001335a0559791a93d8/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic']
+yes
+---------------------------------------------------------
+Checking for header stdlib.h
+==>
+#include <stdlib.h>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] [32mcxx: build/.conf_check_3a82ef2f96ebcc67f6086c98d2e6291e/test.cpp -> build/.conf_check_3a82ef2f96ebcc67f6086c98d2e6291e/testbuild/test.cpp.1.o
+[0m
+['g++-7', '-O0', '-ggdb', '-g3', '-std=gnu++11', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE___UINT128_T=1', '-DINT64X64_USE_128=1', '-DHAVE_STDINT_H=1', '-DHAVE_INTTYPES_H=1', '-DHAVE_SYS_TYPES_H=1', '-DHAVE_SYS_STAT_H=1', '-DHAVE_DIRENT_H=1', '../test.cpp', '-c', '-o', 'test.cpp.1.o']
+[2/2] [33mcxxprogram: build/.conf_check_3a82ef2f96ebcc67f6086c98d2e6291e/testbuild/test.cpp.1.o -> build/.conf_check_3a82ef2f96ebcc67f6086c98d2e6291e/testbuild/testprog
+[0m
+['g++-7', 'test.cpp.1.o', '-o', '/home/gakki/Hawkeye/simulation/build/.conf_check_3a82ef2f96ebcc67f6086c98d2e6291e/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic']
+yes
+---------------------------------------------------------
+Checking for header signal.h
+==>
+#include <signal.h>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] [32mcxx: build/.conf_check_48955ac54d2136a572805353a7b9b62d/test.cpp -> build/.conf_check_48955ac54d2136a572805353a7b9b62d/testbuild/test.cpp.1.o
+[0m
+['g++-7', '-O0', '-ggdb', '-g3', '-std=gnu++11', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE___UINT128_T=1', '-DINT64X64_USE_128=1', '-DHAVE_STDINT_H=1', '-DHAVE_INTTYPES_H=1', '-DHAVE_SYS_TYPES_H=1', '-DHAVE_SYS_STAT_H=1', '-DHAVE_DIRENT_H=1', '-DHAVE_STDLIB_H=1', '-DHAVE_GETENV=1', '../test.cpp', '-c', '-o', 'test.cpp.1.o']
+[2/2] [33mcxxprogram: build/.conf_check_48955ac54d2136a572805353a7b9b62d/testbuild/test.cpp.1.o -> build/.conf_check_48955ac54d2136a572805353a7b9b62d/testbuild/testprog
+[0m
+['g++-7', 'test.cpp.1.o', '-o', '/home/gakki/Hawkeye/simulation/build/.conf_check_48955ac54d2136a572805353a7b9b62d/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic']
+yes
+---------------------------------------------------------
+Checking for header pthread.h
+==>
+
+#include <pthread.h>
+int main ()
+{
+   pthread_mutex_t m;
+   pthread_mutex_init (&m, NULL);
+   return 0;
+}
+
+<==
+[1/2] [32mcxx: build/.conf_check_2be466e82e703a744ee152afe2b58299/test.cpp -> build/.conf_check_2be466e82e703a744ee152afe2b58299/testbuild/test.cpp.1.o
+[0m
+['g++-7', '-O0', '-ggdb', '-g3', '-std=gnu++11', '-pthread', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE___UINT128_T=1', '-DINT64X64_USE_128=1', '-DHAVE_STDINT_H=1', '-DHAVE_INTTYPES_H=1', '-DHAVE_SYS_TYPES_H=1', '-DHAVE_SYS_STAT_H=1', '-DHAVE_DIRENT_H=1', '-DHAVE_STDLIB_H=1', '-DHAVE_GETENV=1', '-DHAVE_SIGNAL_H=1', '../test.cpp', '-c', '-o', 'test.cpp.1.o']
+[2/2] [33mcxxprogram: build/.conf_check_2be466e82e703a744ee152afe2b58299/testbuild/test.cpp.1.o -> build/.conf_check_2be466e82e703a744ee152afe2b58299/testbuild/testprog
+[0m
+['g++-7', '-pthread', 'test.cpp.1.o', '-o', '/home/gakki/Hawkeye/simulation/build/.conf_check_2be466e82e703a744ee152afe2b58299/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic']
+yes
+---------------------------------------------------------
+Checking for header stdint.h
+==>
+#include <stdint.h>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] [32mcxx: build/.conf_check_fa0c4ec9c63ac505501cc0863d9bdc48/test.cpp -> build/.conf_check_fa0c4ec9c63ac505501cc0863d9bdc48/testbuild/test.cpp.1.o
+[0m
+['g++-7', '-O0', '-ggdb', '-g3', '-std=gnu++11', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE___UINT128_T=1', '-DINT64X64_USE_128=1', '-DHAVE_INTTYPES_H=1', '-DHAVE_SYS_TYPES_H=1', '-DHAVE_SYS_STAT_H=1', '-DHAVE_DIRENT_H=1', '-DHAVE_STDLIB_H=1', '-DHAVE_GETENV=1', '-DHAVE_SIGNAL_H=1', '-DHAVE_PTHREAD_H=1', '../test.cpp', '-c', '-o', 'test.cpp.1.o']
+[2/2] [33mcxxprogram: build/.conf_check_fa0c4ec9c63ac505501cc0863d9bdc48/testbuild/test.cpp.1.o -> build/.conf_check_fa0c4ec9c63ac505501cc0863d9bdc48/testbuild/testprog
+[0m
+['g++-7', 'test.cpp.1.o', '-o', '/home/gakki/Hawkeye/simulation/build/.conf_check_fa0c4ec9c63ac505501cc0863d9bdc48/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic']
+yes
+---------------------------------------------------------
+Checking for header inttypes.h
+==>
+#include <inttypes.h>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] [32mcxx: build/.conf_check_7c67b81911f8bf0aede92c843d0e47cf/test.cpp -> build/.conf_check_7c67b81911f8bf0aede92c843d0e47cf/testbuild/test.cpp.1.o
+[0m
+['g++-7', '-O0', '-ggdb', '-g3', '-std=gnu++11', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE___UINT128_T=1', '-DINT64X64_USE_128=1', '-DHAVE_SYS_TYPES_H=1', '-DHAVE_SYS_STAT_H=1', '-DHAVE_DIRENT_H=1', '-DHAVE_STDLIB_H=1', '-DHAVE_GETENV=1', '-DHAVE_SIGNAL_H=1', '-DHAVE_PTHREAD_H=1', '-DHAVE_STDINT_H=1', '../test.cpp', '-c', '-o', 'test.cpp.1.o']
+[2/2] [33mcxxprogram: build/.conf_check_7c67b81911f8bf0aede92c843d0e47cf/testbuild/test.cpp.1.o -> build/.conf_check_7c67b81911f8bf0aede92c843d0e47cf/testbuild/testprog
+[0m
+['g++-7', 'test.cpp.1.o', '-o', '/home/gakki/Hawkeye/simulation/build/.conf_check_7c67b81911f8bf0aede92c843d0e47cf/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic']
+yes
+---------------------------------------------------------
+Checking for header sys/inttypes.h
+==>
+#include <sys/inttypes.h>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] [32mcxx: build/.conf_check_61ecbfef21667d45a28decabe37fdf64/test.cpp -> build/.conf_check_61ecbfef21667d45a28decabe37fdf64/testbuild/test.cpp.1.o
+[0m
+['g++-7', '-O0', '-ggdb', '-g3', '-std=gnu++11', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE___UINT128_T=1', '-DINT64X64_USE_128=1', '-DHAVE_SYS_TYPES_H=1', '-DHAVE_SYS_STAT_H=1', '-DHAVE_DIRENT_H=1', '-DHAVE_STDLIB_H=1', '-DHAVE_GETENV=1', '-DHAVE_SIGNAL_H=1', '-DHAVE_PTHREAD_H=1', '-DHAVE_STDINT_H=1', '-DHAVE_INTTYPES_H=1', '../test.cpp', '-c', '-o', 'test.cpp.1.o']
+err: ../test.cpp:1:10: fatal error: sys/inttypes.h: No such file or directory
+ #include <sys/inttypes.h>
+          ^~~~~~~~~~~~~~~~
+compilation terminated.
+
+from /home/gakki/Hawkeye/simulation/src/core: Test does not build: Traceback (most recent call last):
+  File "/home/gakki/Hawkeye/simulation/.waf-1.7.11-edc6ccb516c5e3f9b892efc9f53a610f/waflib/Tools/c_config.py", line 459, in run_c_code
+    bld.compile()
+  File "/home/gakki/Hawkeye/simulation/.waf-1.7.11-edc6ccb516c5e3f9b892efc9f53a610f/waflib/Build.py", line 188, in compile
+    raise Errors.BuildError(self.producer.error)
+BuildError: Build failed
+ -> task in 'testprog' failed (exit status 1): 
+	{task 133725439419728: cxx test.cpp -> test.cpp.1.o}
+['g++-7', '-O0', '-ggdb', '-g3', '-std=gnu++11', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE___UINT128_T=1', '-DINT64X64_USE_128=1', '-DHAVE_SYS_TYPES_H=1', '-DHAVE_SYS_STAT_H=1', '-DHAVE_DIRENT_H=1', '-DHAVE_STDLIB_H=1', '-DHAVE_GETENV=1', '-DHAVE_SIGNAL_H=1', '-DHAVE_PTHREAD_H=1', '-DHAVE_STDINT_H=1', '-DHAVE_INTTYPES_H=1', '../test.cpp', '-c', '-o', 'test.cpp.1.o']
+
+not found
+from /home/gakki/Hawkeye/simulation/src/core: The configuration failed
+---------------------------------------------------------
+Checking for library rt
+==>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] [32mcxx: build/.conf_check_5ef57bc0d8aa3565949b6ce1186fd4a7/test.cpp -> build/.conf_check_5ef57bc0d8aa3565949b6ce1186fd4a7/testbuild/test.cpp.1.o
+[0m
+['g++-7', '-O0', '-ggdb', '-g3', '-std=gnu++11', '-pthread', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE___UINT128_T=1', '-DINT64X64_USE_128=1', '-DHAVE_SYS_TYPES_H=1', '-DHAVE_SYS_STAT_H=1', '-DHAVE_DIRENT_H=1', '-DHAVE_STDLIB_H=1', '-DHAVE_GETENV=1', '-DHAVE_SIGNAL_H=1', '-DHAVE_PTHREAD_H=1', '-DHAVE_STDINT_H=1', '-DHAVE_INTTYPES_H=1', '../test.cpp', '-c', '-o', 'test.cpp.1.o']
+[2/2] [33mcxxprogram: build/.conf_check_5ef57bc0d8aa3565949b6ce1186fd4a7/testbuild/test.cpp.1.o -> build/.conf_check_5ef57bc0d8aa3565949b6ce1186fd4a7/testbuild/testprog
+[0m
+['g++-7', '-pthread', 'test.cpp.1.o', '-o', '/home/gakki/Hawkeye/simulation/build/.conf_check_5ef57bc0d8aa3565949b6ce1186fd4a7/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic', '-lrt']
+yes
+---------------------------------------------------------
+Checking for header netpacket/packet.h
+==>
+#include <netpacket/packet.h>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] [32mcxx: build/.conf_check_f00bb2460dc7019f64c1a347be5879fa/test.cpp -> build/.conf_check_f00bb2460dc7019f64c1a347be5879fa/testbuild/test.cpp.1.o
+[0m
+['g++-7', '-O0', '-ggdb', '-g3', '-std=gnu++11', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '../test.cpp', '-c', '-o', 'test.cpp.1.o']
+[2/2] [33mcxxprogram: build/.conf_check_f00bb2460dc7019f64c1a347be5879fa/testbuild/test.cpp.1.o -> build/.conf_check_f00bb2460dc7019f64c1a347be5879fa/testbuild/testprog
+[0m
+['g++-7', 'test.cpp.1.o', '-o', '/home/gakki/Hawkeye/simulation/build/.conf_check_f00bb2460dc7019f64c1a347be5879fa/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic']
+yes
+---------------------------------------------------------
+Checking for NSC location
+not found
+---------------------------------------------------------
+Checking for program pkg-config
+not found
+find program=['pkg-config'] paths=['/usr/local/sbin', '/usr/local/bin', '/usr/sbin', '/usr/bin', '/sbin', '/bin', '/usr/games', '/usr/local/games', '/usr/lib/wsl/lib', '/mnt/c/Users/32913/miniconda3', '/mnt/c/Users/32913/miniconda3/Library/mingw-w64/bin', '/mnt/c/Users/32913/miniconda3/Library/usr/bin', '/mnt/c/Users/32913/miniconda3/Library/bin', '/mnt/c/Users/32913/miniconda3/Scripts', '/mnt/c/Users/32913/miniconda3/bin', '/mnt/d/Git/usr/bin', '/mnt/c/Program Files (x86)/CMake/bin', '/mnt/c/Program Files (x86)/VMware/VMware Workstation/bin', '/mnt/c/x86_64-elf-tools-windows/bin', '/mnt/d/Git/bin', '/mnt/d/Maven/apache-maven-3.9.9/bin', '/mnt/d/Program Files/Scripts', '/mnt/c/Program Files (x86)/qemu', '/mnt/d/Program Files', '/mnt/c/Users/32913/miniconda3', '/mnt/c/Users/32913/miniconda3/Scripts', '/mnt/c/Users/32913/miniconda3/condabin', '/mnt/d/Program Files/Java/jdk-17/bin', '/mnt/c/Program Files/Common Files/Oracle/Java/javapath', '/mnt/c/WINDOWS/system32', '/mnt/c/WINDOWS', '/mnt/c/WINDOWS/System32/Wbem', '/mnt/c/WINDOWS/System32/WindowsPowerShell/v1.0', '/mnt/c/WINDOWS/System32/OpenSSH', '/mnt/c/Program Files/Bandizip', '/mnt/d/Program Files/msys64/mingw64/bin', '/mnt/c/Program Files/MySQL/MySQL Server 8.0/bin', '/mnt/c/Program Files/Pandoc', '/mnt/d/netcat-win32-1.11 (1)/netcat-1.11', '/mnt/d/tomcat/apache-tomcat-10.1.28-windows-x64/apache-tomcat-10.1.28/bin', '/mnt/d/ctf', '/mnt/c/TDM-GCC-32/bin', '/mnt/c/Program Files/JetBrains/CLion 2024.3.4/bin/cmake/win/x64/bin', '/mnt/c/Program Files/IDM Computer Solutions/UltraEdit', '/mnt/c/Program Files/IDM Computer Solutions/UltraCompare', '/mnt/c/Program Files/JetBrains/CLion 2024.3.4/bin/mingw/bin', '/mnt/c/Users/32913/Downloads/chromedriver-win64/chromedriver-win64', '/mnt/c/Users/32913/AppData/Local/Programs/cursor/resources/app/bin', '/mnt/c/Users/32913/AppData/Local/Programs/cursor/resources/app/bin', '/mnt/c/Program Files/dotnet', '/mnt/c/texlive/2025/bin/windows', '/mnt/c/Users/32913/AppData/Local/Microsoft/WindowsApps', '/mnt/d/Program Files/Microsoft VS Code/bin', '/mnt/d/Program Files/JetBrains/IntelliJ IDEA 2023.3.6/bin', '/mnt/d/Program Files/CLion 2024.1/bin', '/mnt/c/Users/32913/AppData/Local/JetBrains/Toolbox/scripts', '/mnt/c/Program Files/JetBrains/PyCharm 2025.1/bin', '/mnt/c/Program Files/JetBrains/CLion 2024.3.4/bin', '/mnt/c/Users/32913/AppData/Local/Microsoft/WindowsApps', '/mnt/c/Users/32913/AppData/Local/Programs/cursor/resources/app/bin', '/mnt/c/Users/32913/AppData/Local/Programs/MiKTeX/miktex/bin/x64', '/mnt/c/Program Files/JetBrains/JetBrains Gateway 2025.2/bin'] var='PKGCONFIG' -> ''
+from /home/gakki/Hawkeye/simulation/src/stats: Could not find the program pkg-config
+---------------------------------------------------------
+Checking for header linux/if_tun.h
+==>
+#include <linux/if_tun.h>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] [32mcxx: build/.conf_check_79f849e1774b3cde8897857e178c7c8c/test.cpp -> build/.conf_check_79f849e1774b3cde8897857e178c7c8c/testbuild/test.cpp.1.o
+[0m
+['g++-7', '-O0', '-ggdb', '-g3', '-std=gnu++11', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE_PACKET_H=1', '../test.cpp', '-c', '-o', 'test.cpp.1.o']
+[2/2] [33mcxxprogram: build/.conf_check_79f849e1774b3cde8897857e178c7c8c/testbuild/test.cpp.1.o -> build/.conf_check_79f849e1774b3cde8897857e178c7c8c/testbuild/testprog
+[0m
+['g++-7', 'test.cpp.1.o', '-o', '/home/gakki/Hawkeye/simulation/build/.conf_check_79f849e1774b3cde8897857e178c7c8c/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic']
+yes
+---------------------------------------------------------
+Checking for program sudo
+/usr/bin/sudo
+find program=['sudo'] paths=['/usr/local/sbin', '/usr/local/bin', '/usr/sbin', '/usr/bin', '/sbin', '/bin', '/usr/games', '/usr/local/games', '/usr/lib/wsl/lib', '/mnt/c/Users/32913/miniconda3', '/mnt/c/Users/32913/miniconda3/Library/mingw-w64/bin', '/mnt/c/Users/32913/miniconda3/Library/usr/bin', '/mnt/c/Users/32913/miniconda3/Library/bin', '/mnt/c/Users/32913/miniconda3/Scripts', '/mnt/c/Users/32913/miniconda3/bin', '/mnt/d/Git/usr/bin', '/mnt/c/Program Files (x86)/CMake/bin', '/mnt/c/Program Files (x86)/VMware/VMware Workstation/bin', '/mnt/c/x86_64-elf-tools-windows/bin', '/mnt/d/Git/bin', '/mnt/d/Maven/apache-maven-3.9.9/bin', '/mnt/d/Program Files/Scripts', '/mnt/c/Program Files (x86)/qemu', '/mnt/d/Program Files', '/mnt/c/Users/32913/miniconda3', '/mnt/c/Users/32913/miniconda3/Scripts', '/mnt/c/Users/32913/miniconda3/condabin', '/mnt/d/Program Files/Java/jdk-17/bin', '/mnt/c/Program Files/Common Files/Oracle/Java/javapath', '/mnt/c/WINDOWS/system32', '/mnt/c/WINDOWS', '/mnt/c/WINDOWS/System32/Wbem', '/mnt/c/WINDOWS/System32/WindowsPowerShell/v1.0', '/mnt/c/WINDOWS/System32/OpenSSH', '/mnt/c/Program Files/Bandizip', '/mnt/d/Program Files/msys64/mingw64/bin', '/mnt/c/Program Files/MySQL/MySQL Server 8.0/bin', '/mnt/c/Program Files/Pandoc', '/mnt/d/netcat-win32-1.11 (1)/netcat-1.11', '/mnt/d/tomcat/apache-tomcat-10.1.28-windows-x64/apache-tomcat-10.1.28/bin', '/mnt/d/ctf', '/mnt/c/TDM-GCC-32/bin', '/mnt/c/Program Files/JetBrains/CLion 2024.3.4/bin/cmake/win/x64/bin', '/mnt/c/Program Files/IDM Computer Solutions/UltraEdit', '/mnt/c/Program Files/IDM Computer Solutions/UltraCompare', '/mnt/c/Program Files/JetBrains/CLion 2024.3.4/bin/mingw/bin', '/mnt/c/Users/32913/Downloads/chromedriver-win64/chromedriver-win64', '/mnt/c/Users/32913/AppData/Local/Programs/cursor/resources/app/bin', '/mnt/c/Users/32913/AppData/Local/Programs/cursor/resources/app/bin', '/mnt/c/Program Files/dotnet', '/mnt/c/texlive/2025/bin/windows', '/mnt/c/Users/32913/AppData/Local/Microsoft/WindowsApps', '/mnt/d/Program Files/Microsoft VS Code/bin', '/mnt/d/Program Files/JetBrains/IntelliJ IDEA 2023.3.6/bin', '/mnt/d/Program Files/CLion 2024.1/bin', '/mnt/c/Users/32913/AppData/Local/JetBrains/Toolbox/scripts', '/mnt/c/Program Files/JetBrains/PyCharm 2025.1/bin', '/mnt/c/Program Files/JetBrains/CLion 2024.3.4/bin', '/mnt/c/Users/32913/AppData/Local/Microsoft/WindowsApps', '/mnt/c/Users/32913/AppData/Local/Programs/cursor/resources/app/bin', '/mnt/c/Users/32913/AppData/Local/Programs/MiKTeX/miktex/bin/x64', '/mnt/c/Program Files/JetBrains/JetBrains Gateway 2025.2/bin'] var='SUDO' -> '/usr/bin/sudo'
+---------------------------------------------------------
+Checking for program valgrind
+not found
+find program=['valgrind'] paths=['/usr/local/sbin', '/usr/local/bin', '/usr/sbin', '/usr/bin', '/sbin', '/bin', '/usr/games', '/usr/local/games', '/usr/lib/wsl/lib', '/mnt/c/Users/32913/miniconda3', '/mnt/c/Users/32913/miniconda3/Library/mingw-w64/bin', '/mnt/c/Users/32913/miniconda3/Library/usr/bin', '/mnt/c/Users/32913/miniconda3/Library/bin', '/mnt/c/Users/32913/miniconda3/Scripts', '/mnt/c/Users/32913/miniconda3/bin', '/mnt/d/Git/usr/bin', '/mnt/c/Program Files (x86)/CMake/bin', '/mnt/c/Program Files (x86)/VMware/VMware Workstation/bin', '/mnt/c/x86_64-elf-tools-windows/bin', '/mnt/d/Git/bin', '/mnt/d/Maven/apache-maven-3.9.9/bin', '/mnt/d/Program Files/Scripts', '/mnt/c/Program Files (x86)/qemu', '/mnt/d/Program Files', '/mnt/c/Users/32913/miniconda3', '/mnt/c/Users/32913/miniconda3/Scripts', '/mnt/c/Users/32913/miniconda3/condabin', '/mnt/d/Program Files/Java/jdk-17/bin', '/mnt/c/Program Files/Common Files/Oracle/Java/javapath', '/mnt/c/WINDOWS/system32', '/mnt/c/WINDOWS', '/mnt/c/WINDOWS/System32/Wbem', '/mnt/c/WINDOWS/System32/WindowsPowerShell/v1.0', '/mnt/c/WINDOWS/System32/OpenSSH', '/mnt/c/Program Files/Bandizip', '/mnt/d/Program Files/msys64/mingw64/bin', '/mnt/c/Program Files/MySQL/MySQL Server 8.0/bin', '/mnt/c/Program Files/Pandoc', '/mnt/d/netcat-win32-1.11 (1)/netcat-1.11', '/mnt/d/tomcat/apache-tomcat-10.1.28-windows-x64/apache-tomcat-10.1.28/bin', '/mnt/d/ctf', '/mnt/c/TDM-GCC-32/bin', '/mnt/c/Program Files/JetBrains/CLion 2024.3.4/bin/cmake/win/x64/bin', '/mnt/c/Program Files/IDM Computer Solutions/UltraEdit', '/mnt/c/Program Files/IDM Computer Solutions/UltraCompare', '/mnt/c/Program Files/JetBrains/CLion 2024.3.4/bin/mingw/bin', '/mnt/c/Users/32913/Downloads/chromedriver-win64/chromedriver-win64', '/mnt/c/Users/32913/AppData/Local/Programs/cursor/resources/app/bin', '/mnt/c/Users/32913/AppData/Local/Programs/cursor/resources/app/bin', '/mnt/c/Program Files/dotnet', '/mnt/c/texlive/2025/bin/windows', '/mnt/c/Users/32913/AppData/Local/Microsoft/WindowsApps', '/mnt/d/Program Files/Microsoft VS Code/bin', '/mnt/d/Program Files/JetBrains/IntelliJ IDEA 2023.3.6/bin', '/mnt/d/Program Files/CLion 2024.1/bin', '/mnt/c/Users/32913/AppData/Local/JetBrains/Toolbox/scripts', '/mnt/c/Program Files/JetBrains/PyCharm 2025.1/bin', '/mnt/c/Program Files/JetBrains/CLion 2024.3.4/bin', '/mnt/c/Users/32913/AppData/Local/Microsoft/WindowsApps', '/mnt/c/Users/32913/AppData/Local/Programs/cursor/resources/app/bin', '/mnt/c/Users/32913/AppData/Local/Programs/MiKTeX/miktex/bin/x64', '/mnt/c/Program Files/JetBrains/JetBrains Gateway 2025.2/bin'] var='VALGRIND' -> ''
+from /home/gakki/Hawkeye/simulation: Could not find the program valgrind
+---------------------------------------------------------
+Checking for program pkg-config
+not found
+find program=['pkg-config'] paths=['/usr/local/sbin', '/usr/local/bin', '/usr/sbin', '/usr/bin', '/sbin', '/bin', '/usr/games', '/usr/local/games', '/usr/lib/wsl/lib', '/mnt/c/Users/32913/miniconda3', '/mnt/c/Users/32913/miniconda3/Library/mingw-w64/bin', '/mnt/c/Users/32913/miniconda3/Library/usr/bin', '/mnt/c/Users/32913/miniconda3/Library/bin', '/mnt/c/Users/32913/miniconda3/Scripts', '/mnt/c/Users/32913/miniconda3/bin', '/mnt/d/Git/usr/bin', '/mnt/c/Program Files (x86)/CMake/bin', '/mnt/c/Program Files (x86)/VMware/VMware Workstation/bin', '/mnt/c/x86_64-elf-tools-windows/bin', '/mnt/d/Git/bin', '/mnt/d/Maven/apache-maven-3.9.9/bin', '/mnt/d/Program Files/Scripts', '/mnt/c/Program Files (x86)/qemu', '/mnt/d/Program Files', '/mnt/c/Users/32913/miniconda3', '/mnt/c/Users/32913/miniconda3/Scripts', '/mnt/c/Users/32913/miniconda3/condabin', '/mnt/d/Program Files/Java/jdk-17/bin', '/mnt/c/Program Files/Common Files/Oracle/Java/javapath', '/mnt/c/WINDOWS/system32', '/mnt/c/WINDOWS', '/mnt/c/WINDOWS/System32/Wbem', '/mnt/c/WINDOWS/System32/WindowsPowerShell/v1.0', '/mnt/c/WINDOWS/System32/OpenSSH', '/mnt/c/Program Files/Bandizip', '/mnt/d/Program Files/msys64/mingw64/bin', '/mnt/c/Program Files/MySQL/MySQL Server 8.0/bin', '/mnt/c/Program Files/Pandoc', '/mnt/d/netcat-win32-1.11 (1)/netcat-1.11', '/mnt/d/tomcat/apache-tomcat-10.1.28-windows-x64/apache-tomcat-10.1.28/bin', '/mnt/d/ctf', '/mnt/c/TDM-GCC-32/bin', '/mnt/c/Program Files/JetBrains/CLion 2024.3.4/bin/cmake/win/x64/bin', '/mnt/c/Program Files/IDM Computer Solutions/UltraEdit', '/mnt/c/Program Files/IDM Computer Solutions/UltraCompare', '/mnt/c/Program Files/JetBrains/CLion 2024.3.4/bin/mingw/bin', '/mnt/c/Users/32913/Downloads/chromedriver-win64/chromedriver-win64', '/mnt/c/Users/32913/AppData/Local/Programs/cursor/resources/app/bin', '/mnt/c/Users/32913/AppData/Local/Programs/cursor/resources/app/bin', '/mnt/c/Program Files/dotnet', '/mnt/c/texlive/2025/bin/windows', '/mnt/c/Users/32913/AppData/Local/Microsoft/WindowsApps', '/mnt/d/Program Files/Microsoft VS Code/bin', '/mnt/d/Program Files/JetBrains/IntelliJ IDEA 2023.3.6/bin', '/mnt/d/Program Files/CLion 2024.1/bin', '/mnt/c/Users/32913/AppData/Local/JetBrains/Toolbox/scripts', '/mnt/c/Program Files/JetBrains/PyCharm 2025.1/bin', '/mnt/c/Program Files/JetBrains/CLion 2024.3.4/bin', '/mnt/c/Users/32913/AppData/Local/Microsoft/WindowsApps', '/mnt/c/Users/32913/AppData/Local/Programs/cursor/resources/app/bin', '/mnt/c/Users/32913/AppData/Local/Programs/MiKTeX/miktex/bin/x64', '/mnt/c/Program Files/JetBrains/JetBrains Gateway 2025.2/bin'] var='PKGCONFIG' -> ''
+from /home/gakki/Hawkeye/simulation: Could not find the program pkg-config
+----------------------------------------------------------------
+Checking for compilation flag -Wno-error=deprecated-d... support
+==>
+#include <stdio.h>
+int main() { return 0; }
+
+<==
+[1/2] [32mcxx: build/.conf_check_fe0ca542f39064c5a14ee41a2e983996/test.cc -> build/.conf_check_fe0ca542f39064c5a14ee41a2e983996/testbuild/test.cc.1.o
+[0m
+['g++-7', '-O0', '-ggdb', '-g3', '-std=gnu++11', '-Wno-error=deprecated-declarations', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE_PACKET_H=1', '-DHAVE_IF_TUN_H=1', '../test.cc', '-c', '-o', 'test.cc.1.o']
+[2/2] [33mcxxprogram: build/.conf_check_fe0ca542f39064c5a14ee41a2e983996/testbuild/test.cc.1.o -> build/.conf_check_fe0ca542f39064c5a14ee41a2e983996/testbuild/testprog
+[0m
+['g++-7', 'test.cc.1.o', '-o', '/home/gakki/Hawkeye/simulation/build/.conf_check_fe0ca542f39064c5a14ee41a2e983996/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic']
+ok
+----------------------------------------------------------------
+Checking for compilation flag -Wno-error=deprecated-d... support
+==>
+#include <stdio.h>
+int main() { return 0; }
+
+<==
+[1/2] [32mc: build/.conf_check_d8a2c40aecfb7c8eac7dd03fcbfb1110/test.c -> build/.conf_check_d8a2c40aecfb7c8eac7dd03fcbfb1110/testbuild/test.c.1.o
+[0m
+['gcc-7', '-Wno-error=deprecated-declarations', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE_PACKET_H=1', '-DHAVE_IF_TUN_H=1', '../test.c', '-c', '-o', 'test.c.1.o']
+[2/2] [33mcprogram: build/.conf_check_d8a2c40aecfb7c8eac7dd03fcbfb1110/testbuild/test.c.1.o -> build/.conf_check_d8a2c40aecfb7c8eac7dd03fcbfb1110/testbuild/testprog
+[0m
+['gcc-7', 'test.c.1.o', '-o', '/home/gakki/Hawkeye/simulation/build/.conf_check_d8a2c40aecfb7c8eac7dd03fcbfb1110/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic']
+ok
+----------------------------------------------------------------
+Checking for compilation flag -fstrict-aliasing... support
+==>
+#include <stdio.h>
+int main() { return 0; }
+
+<==
+[1/2] [32mcxx: build/.conf_check_fe0ca542f39064c5a14ee41a2e983996/test.cc -> build/.conf_check_fe0ca542f39064c5a14ee41a2e983996/testbuild/test.cc.1.o
+[0m
+['g++-7', '-O0', '-ggdb', '-g3', '-std=gnu++11', '-Wno-error=deprecated-declarations', '-fstrict-aliasing', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE_PACKET_H=1', '-DHAVE_IF_TUN_H=1', '../test.cc', '-c', '-o', 'test.cc.1.o']
+[2/2] [33mcxxprogram: build/.conf_check_fe0ca542f39064c5a14ee41a2e983996/testbuild/test.cc.1.o -> build/.conf_check_fe0ca542f39064c5a14ee41a2e983996/testbuild/testprog
+[0m
+['g++-7', 'test.cc.1.o', '-o', '/home/gakki/Hawkeye/simulation/build/.conf_check_fe0ca542f39064c5a14ee41a2e983996/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic']
+ok
+----------------------------------------------------------------
+Checking for compilation flag -fstrict-aliasing... support
+==>
+#include <stdio.h>
+int main() { return 0; }
+
+<==
+[1/2] [32mc: build/.conf_check_d8a2c40aecfb7c8eac7dd03fcbfb1110/test.c -> build/.conf_check_d8a2c40aecfb7c8eac7dd03fcbfb1110/testbuild/test.c.1.o
+[0m
+['gcc-7', '-fstrict-aliasing', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE_PACKET_H=1', '-DHAVE_IF_TUN_H=1', '../test.c', '-c', '-o', 'test.c.1.o']
+[2/2] [33mcprogram: build/.conf_check_d8a2c40aecfb7c8eac7dd03fcbfb1110/testbuild/test.c.1.o -> build/.conf_check_d8a2c40aecfb7c8eac7dd03fcbfb1110/testbuild/testprog
+[0m
+['gcc-7', 'test.c.1.o', '-o', '/home/gakki/Hawkeye/simulation/build/.conf_check_d8a2c40aecfb7c8eac7dd03fcbfb1110/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic']
+ok
+----------------------------------------------------------------
+Checking for compilation flag -Wstrict-aliasing... support
+==>
+#include <stdio.h>
+int main() { return 0; }
+
+<==
+[1/2] [32mcxx: build/.conf_check_fe0ca542f39064c5a14ee41a2e983996/test.cc -> build/.conf_check_fe0ca542f39064c5a14ee41a2e983996/testbuild/test.cc.1.o
+[0m
+['g++-7', '-O0', '-ggdb', '-g3', '-std=gnu++11', '-Wno-error=deprecated-declarations', '-fstrict-aliasing', '-Wstrict-aliasing', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE_PACKET_H=1', '-DHAVE_IF_TUN_H=1', '../test.cc', '-c', '-o', 'test.cc.1.o']
+[2/2] [33mcxxprogram: build/.conf_check_fe0ca542f39064c5a14ee41a2e983996/testbuild/test.cc.1.o -> build/.conf_check_fe0ca542f39064c5a14ee41a2e983996/testbuild/testprog
+[0m
+['g++-7', 'test.cc.1.o', '-o', '/home/gakki/Hawkeye/simulation/build/.conf_check_fe0ca542f39064c5a14ee41a2e983996/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic']
+ok
+----------------------------------------------------------------
+Checking for compilation flag -Wstrict-aliasing... support
+==>
+#include <stdio.h>
+int main() { return 0; }
+
+<==
+[1/2] [32mc: build/.conf_check_d8a2c40aecfb7c8eac7dd03fcbfb1110/test.c -> build/.conf_check_d8a2c40aecfb7c8eac7dd03fcbfb1110/testbuild/test.c.1.o
+[0m
+['gcc-7', '-Wstrict-aliasing', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE_PACKET_H=1', '-DHAVE_IF_TUN_H=1', '../test.c', '-c', '-o', 'test.c.1.o']
+[2/2] [33mcprogram: build/.conf_check_d8a2c40aecfb7c8eac7dd03fcbfb1110/testbuild/test.c.1.o -> build/.conf_check_d8a2c40aecfb7c8eac7dd03fcbfb1110/testbuild/testprog
+[0m
+['gcc-7', 'test.c.1.o', '-o', '/home/gakki/Hawkeye/simulation/build/.conf_check_d8a2c40aecfb7c8eac7dd03fcbfb1110/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic']
+ok
+----------------------------------------------------------------
+Checking for program doxygen
+not found
+find program=['doxygen'] paths=['/usr/local/sbin', '/usr/local/bin', '/usr/sbin', '/usr/bin', '/sbin', '/bin', '/usr/games', '/usr/local/games', '/usr/lib/wsl/lib', '/mnt/c/Users/32913/miniconda3', '/mnt/c/Users/32913/miniconda3/Library/mingw-w64/bin', '/mnt/c/Users/32913/miniconda3/Library/usr/bin', '/mnt/c/Users/32913/miniconda3/Library/bin', '/mnt/c/Users/32913/miniconda3/Scripts', '/mnt/c/Users/32913/miniconda3/bin', '/mnt/d/Git/usr/bin', '/mnt/c/Program Files (x86)/CMake/bin', '/mnt/c/Program Files (x86)/VMware/VMware Workstation/bin', '/mnt/c/x86_64-elf-tools-windows/bin', '/mnt/d/Git/bin', '/mnt/d/Maven/apache-maven-3.9.9/bin', '/mnt/d/Program Files/Scripts', '/mnt/c/Program Files (x86)/qemu', '/mnt/d/Program Files', '/mnt/c/Users/32913/miniconda3', '/mnt/c/Users/32913/miniconda3/Scripts', '/mnt/c/Users/32913/miniconda3/condabin', '/mnt/d/Program Files/Java/jdk-17/bin', '/mnt/c/Program Files/Common Files/Oracle/Java/javapath', '/mnt/c/WINDOWS/system32', '/mnt/c/WINDOWS', '/mnt/c/WINDOWS/System32/Wbem', '/mnt/c/WINDOWS/System32/WindowsPowerShell/v1.0', '/mnt/c/WINDOWS/System32/OpenSSH', '/mnt/c/Program Files/Bandizip', '/mnt/d/Program Files/msys64/mingw64/bin', '/mnt/c/Program Files/MySQL/MySQL Server 8.0/bin', '/mnt/c/Program Files/Pandoc', '/mnt/d/netcat-win32-1.11 (1)/netcat-1.11', '/mnt/d/tomcat/apache-tomcat-10.1.28-windows-x64/apache-tomcat-10.1.28/bin', '/mnt/d/ctf', '/mnt/c/TDM-GCC-32/bin', '/mnt/c/Program Files/JetBrains/CLion 2024.3.4/bin/cmake/win/x64/bin', '/mnt/c/Program Files/IDM Computer Solutions/UltraEdit', '/mnt/c/Program Files/IDM Computer Solutions/UltraCompare', '/mnt/c/Program Files/JetBrains/CLion 2024.3.4/bin/mingw/bin', '/mnt/c/Users/32913/Downloads/chromedriver-win64/chromedriver-win64', '/mnt/c/Users/32913/AppData/Local/Programs/cursor/resources/app/bin', '/mnt/c/Users/32913/AppData/Local/Programs/cursor/resources/app/bin', '/mnt/c/Program Files/dotnet', '/mnt/c/texlive/2025/bin/windows', '/mnt/c/Users/32913/AppData/Local/Microsoft/WindowsApps', '/mnt/d/Program Files/Microsoft VS Code/bin', '/mnt/d/Program Files/JetBrains/IntelliJ IDEA 2023.3.6/bin', '/mnt/d/Program Files/CLion 2024.1/bin', '/mnt/c/Users/32913/AppData/Local/JetBrains/Toolbox/scripts', '/mnt/c/Program Files/JetBrains/PyCharm 2025.1/bin', '/mnt/c/Program Files/JetBrains/CLion 2024.3.4/bin', '/mnt/c/Users/32913/AppData/Local/Microsoft/WindowsApps', '/mnt/c/Users/32913/AppData/Local/Programs/cursor/resources/app/bin', '/mnt/c/Users/32913/AppData/Local/Programs/MiKTeX/miktex/bin/x64', '/mnt/c/Program Files/JetBrains/JetBrains Gateway 2025.2/bin'] var='DOXYGEN' -> ''
+from /home/gakki/Hawkeye/simulation: Could not find the program doxygen
