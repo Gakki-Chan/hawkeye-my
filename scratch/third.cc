@@ -20,7 +20,11 @@
 #include <iostream>
 #include <fstream>
 #include <unordered_map>
+#include <unordered_set>
 #include <set>
+#include <vector>
+#include <utility>
+#include <cstdint>
 #include <time.h>
 #include "ns3/core-module.h"
 #include "ns3/qbb-helper.h"
@@ -90,7 +94,128 @@ set<int> agent_nodes;
 set<int> no_cc_nodes;
 uint32_t agent_threshold;
 uint32_t epoch_time = 0;
+bool enable_analysis_server = false;
+uint32_t analysis_server_id = 0;
+double stage1_capture_ms = 3.0;
+double stage2_focus_ms = 200.0;
+std::string analysis_meta_file = "analysis_meta.txt";
+std::string suspect_file = "suspect.txt";
+std::string subflow_lifecycle_file = "subflow_lifecycle.txt";
+std::string aggflow_timeline_file = "aggflow_timeline.txt";
 
+bool enable_attacker = false;
+std::string attacker_file;
+double attacker_start_time = 0.0;
+double attacker_duration = 0.0;
+double attacker_interval = 0.0;
+uint32_t attacker_dst = 0;
+uint32_t attacker_pg = 3;
+uint32_t attacker_dport = 4791;
+uint32_t attacker_maxPacketCount = 1000000;
+set<int> attack_nodes;
+
+static const uint8_t kRdmaProto = 0x11;
+
+Ipv4Address node_id_to_ip(uint32_t id);
+uint32_t ip_to_node_id(Ipv4Address ip);
+
+struct SubFlowKey{
+uint32_t sip, dip;
+uint16_t sport, dport;
+uint8_t proto;
+bool operator==(const SubFlowKey& o) const{
+return sip==o.sip && dip==o.dip && sport==o.sport && dport==o.dport && proto==o.proto;
+}
+};
+
+struct SubFlowKeyHash{
+size_t operator()(const SubFlowKey& k) const{
+uint64_t x = ((uint64_t)k.sip<<32) ^ (uint64_t)k.dip;
+x ^= ((uint64_t)k.sport<<48) ^ ((uint64_t)k.dport<<16) ^ (uint64_t)k.proto;
+return std::hash<uint64_t>()(x);
+}
+};
+
+struct SubFlowPlan{
+double planned_start;
+double planned_stop;
+bool is_attack;
+uint64_t event_id;
+};
+
+struct AggFlowKey{
+uint32_t sip, dip;
+bool operator==(const AggFlowKey& o) const{
+return sip==o.sip && dip==o.dip;
+}
+};
+
+struct AggFlowKeyHash{
+size_t operator()(const AggFlowKey& k) const{
+return std::hash<uint64_t>()((((uint64_t)k.sip)<<32) ^ (uint64_t)k.dip);
+}
+};
+
+struct AggFlowTimeline{
+double first_start = -1.0;
+double last_end = -1.0;
+uint32_t microflow_count = 0;
+uint32_t attack_microflow_count = 0;
+std::vector<std::pair<double,double>> bursts;
+};
+
+unordered_map<SubFlowKey, SubFlowPlan, SubFlowKeyHash> subflow_plan;
+unordered_map<AggFlowKey, AggFlowTimeline, AggFlowKeyHash> aggflow_timeline;
+
+FILE* subflow_lifecycle_fp = nullptr;
+FILE* aggflow_timeline_fp = nullptr;
+
+static void LogSubFlowStart(uint32_t sip, uint32_t dip, uint16_t sport, uint16_t dport, uint8_t proto, double planned_start, double planned_stop, bool is_attack, uint64_t event_id){
+if (subflow_lifecycle_fp){
+fprintf(subflow_lifecycle_fp, "START %08x %08x %u %u %u %u %lu %.9f %.9f\n", sip, dip, sport, dport, proto, (uint32_t)is_attack, event_id, planned_start, planned_stop);
+fflush(subflow_lifecycle_fp);
+}
+SubFlowKey k{sip,dip,sport,dport,proto};
+subflow_plan[k] = SubFlowPlan{planned_start, planned_stop, is_attack, event_id};
+}
+
+static void LogSubFlowFinish(uint32_t sip, uint32_t dip, uint16_t sport, uint16_t dport, uint8_t proto, double actual_start, double actual_finish){
+SubFlowKey k{sip,dip,sport,dport,proto};
+auto it = subflow_plan.find(k);
+double planned_start = -1.0, planned_stop = -1.0;
+bool is_attack = false;
+uint64_t event_id = 0;
+if (it != subflow_plan.end()){
+planned_start = it->second.planned_start;
+planned_stop = it->second.planned_stop;
+is_attack = it->second.is_attack;
+event_id = it->second.event_id;
+}
+if (subflow_lifecycle_fp){
+fprintf(subflow_lifecycle_fp, "FINISH %08x %08x %u %u %u %u %lu %.9f %.9f %.9f %.9f\n", sip, dip, sport, dport, proto, (uint32_t)is_attack, event_id, planned_start, planned_stop, actual_start, actual_finish);
+fflush(subflow_lifecycle_fp);
+}
+AggFlowKey ak{sip,dip};
+auto &tl = aggflow_timeline[ak];
+if (tl.first_start < 0.0 || actual_start < tl.first_start) tl.first_start = actual_start;
+if (actual_finish > tl.last_end) tl.last_end = actual_finish;
+tl.microflow_count++;
+if (is_attack) tl.attack_microflow_count++;
+tl.bursts.push_back({actual_start, actual_finish});
+}
+
+static void DumpAggFlowTimeline(){
+if (!aggflow_timeline_fp) return;
+for (auto &it : aggflow_timeline){
+auto k = it.first;
+auto &tl = it.second;
+fprintf(aggflow_timeline_fp, "%08x %08x %.9f %.9f %u %u %u", k.sip, k.dip, tl.first_start, tl.last_end, tl.microflow_count, tl.attack_microflow_count, (uint32_t)tl.bursts.size());
+for (auto &b : tl.bursts)
+fprintf(aggflow_timeline_fp, " %.9f %.9f", b.first, b.second);
+fprintf(aggflow_timeline_fp, "\n");
+}
+fflush(aggflow_timeline_fp);
+}
 /************************************************
  * Runtime varibles
  ***********************************************/
@@ -138,9 +263,98 @@ void ReadFlowInput(){
 		NS_ASSERT(n.Get(flow_input.src)->GetNodeType() == 0 && n.Get(flow_input.dst)->GetNodeType() == 0);
 	}
 }
+
+void ReadAttackerInput(){
+if (!enable_attacker) return;
+if (attacker_file.size() == 0) return;
+std::ifstream attackerf(attacker_file.c_str());
+if (!attackerf.is_open()){
+std::cout << "ATTACKER_FILE_OPEN_FAILED\t" << attacker_file << "\n";
+return;
+}
+uint32_t attacker_num = 0;
+attackerf >> attacker_start_time >> attacker_duration >> attacker_interval >> attacker_num;
+std::cout << "ATTACKER_INPUT\t\t\t" << attacker_start_time << ' ' << attacker_duration << ' ' << attacker_interval << ' ' << attacker_num;
+for(uint32_t i = 0; i < attacker_num; i++){
+int node;
+attackerf >> node;
+attack_nodes.insert(node);
+no_cc_nodes.insert(node);
+std::cout << ' ' << node;
+}
+std::cout << "\n";
+attackerf.close();
+}
+
+void BuildPeriodicAttackApps(){
+if (!enable_attacker) return;
+if (attack_nodes.size() == 0) return;
+NS_ASSERT(n.Get(attacker_dst)->GetNodeType() == 0);
+for(set<int>::iterator node = attack_nodes.begin(); node!= attack_nodes.end(); node++){
+double curr_start = attacker_start_time;
+double curr_stop = attacker_start_time + attacker_duration;
+while(curr_start < simulator_stop_time - 0.01){
+uint32_t port = portNumder[*node][attacker_dst]++;
+RdmaClientHelper clientHelper(attacker_pg, serverAddress[*node], serverAddress[attacker_dst], port, attacker_dport, attacker_maxPacketCount, has_win?(global_t==1?maxBdp:pairBdp[n.Get(*node)][n.Get(attacker_dst)]):0, global_t==1?maxRtt:pairRtt[*node][attacker_dst]);
+ApplicationContainer appCon = clientHelper.Install(n.Get(*node));
+appCon.Start(Seconds(curr_start));
+double stop = curr_stop;
+if (stop > simulator_stop_time - 0.001) stop = simulator_stop_time - 0.001;
+appCon.Stop(Seconds(stop));
+LogSubFlowStart(node_id_to_ip(*node).Get(), node_id_to_ip(attacker_dst).Get(), (uint16_t)port, (uint16_t)attacker_dport, kRdmaProto, curr_start, curr_stop, true, 0);
+curr_start += attacker_interval;
+curr_stop = curr_start + attacker_duration;
+}
+}
+}
+
+#include <cstdlib>
+#include <sstream>
+
+void RunAnalysisAndLoadFocus() {
+    if (!enable_analysis_server) return;
+    std::cout << "Running Analysis at " << Simulator::Now().GetSeconds() << "s" << std::endl;
+    // Flush all switch telemetry files
+    for (uint32_t i = 0; i < n.GetN(); i++) {
+        if (n.Get(i)->GetNodeType() == 1) {
+            Ptr<SwitchNode> sw = DynamicCast<SwitchNode>(n.Get(i));
+            if (sw->fp_telemetry) fflush(sw->fp_telemetry);
+        }
+    }
+    
+    // Call python script
+    int ret = system("python3 mix/data/graph.py");
+    if (ret != 0) {
+        std::cerr << "Analysis script failed" << std::endl;
+    }
+    
+    // Read suspect file and update FocusTable
+    std::string path = dir.size() == 0 ? suspect_file : (dir + "/" + suspect_file);
+    std::ifstream sf(path.c_str());
+    if (sf.is_open()) {
+        std::string line;
+        while (std::getline(sf, line)) {
+            // Assume format: srcIp dstIp
+            uint32_t sip, dip;
+            std::stringstream ss(line);
+            if (ss >> std::hex >> sip >> dip) {
+                SwitchNode::AggFlowKey k{sip, dip};
+                for (uint32_t i = 0; i < n.GetN(); i++) {
+                    if (n.Get(i)->GetNodeType() == 1) {
+                        Ptr<SwitchNode> sw = DynamicCast<SwitchNode>(n.Get(i));
+                        sw->m_focusAggFlows.insert(k);
+                    }
+                }
+            }
+        }
+        sf.close();
+    }
+}
+
 void ScheduleFlowInputs(){
 	while (flow_input.idx < flow_num && Seconds(flow_input.start_time) == Simulator::Now()){
 		uint32_t port = portNumder[flow_input.src][flow_input.dst]++; // get a new port number
+                LogSubFlowStart(node_id_to_ip(flow_input.src).Get(), node_id_to_ip(flow_input.dst).Get(), (uint16_t)port, (uint16_t)flow_input.dport, kRdmaProto, flow_input.start_time, -1.0, false, 0);
 		RdmaClientHelper clientHelper(flow_input.pg, serverAddress[flow_input.src], serverAddress[flow_input.dst], port, flow_input.dport, flow_input.maxPacketCount, has_win?(global_t==1?maxBdp:pairBdp[n.Get(flow_input.src)][n.Get(flow_input.dst)]):0, global_t==1?maxRtt:pairRtt[flow_input.src][flow_input.dst]);
 		ApplicationContainer appCon = clientHelper.Install(n.Get(flow_input.src));
 		appCon.Start(Time(0));
@@ -167,6 +381,7 @@ uint32_t ip_to_node_id(Ipv4Address ip){
 }
 
 void qp_finish(FILE* fout, Ptr<RdmaQueuePair> q){
+		LogSubFlowFinish(q->sip.Get(), q->dip.Get(), q->sport, q->dport, kRdmaProto, q->startTime.GetSeconds(), Simulator::Now().GetSeconds());
 	uint32_t sid = ip_to_node_id(q->sip), did = ip_to_node_id(q->dip);
 	uint64_t base_rtt = pairRtt[sid][did], b = pairBw[sid][did];
 	uint32_t total_bytes = q->m_size + ((q->m_size-1) / packet_payload_size + 1) * (CustomHeader::GetStaticWholeHeaderSize() - IntHeader::GetStaticSize()); // translate to the minimum bytes required (with header but no INT)
@@ -681,7 +896,58 @@ int main(int argc, char *argv[])
 			else if (key.compare("EPOCH_TIME") == 0){
 				conf >> epoch_time;
 				std::cout << "EPOCH_TIME\t\t\t" << epoch_time << '\n';
-			}else if (key.compare("NO_CC_NODE") == 0){
+			}else if (key.compare("ENABLE_ANALYSIS_SERVER") == 0){
+								uint32_t v;
+								conf >> v;
+								enable_analysis_server = v;
+								std::cout << "ENABLE_ANALYSIS_SERVER\t" << enable_analysis_server << '\n';
+							}else if (key.compare("ANALYSIS_SERVER_ID") == 0){
+								conf >> analysis_server_id;
+								std::cout << "ANALYSIS_SERVER_ID\t\t" << analysis_server_id << '\n';
+							}else if (key.compare("STAGE1_CAPTURE_MS") == 0){
+								conf >> stage1_capture_ms;
+								std::cout << "STAGE1_CAPTURE_MS\t\t" << stage1_capture_ms << '\n';
+							}else if (key.compare("STAGE2_FOCUS_MS") == 0){
+								conf >> stage2_focus_ms;
+								std::cout << "STAGE2_FOCUS_MS\t\t" << stage2_focus_ms << '\n';
+							}else if (key.compare("ANALYSIS_META_FILE") == 0){
+								conf >> analysis_meta_file;
+								std::cout << "ANALYSIS_META_FILE\t" << analysis_meta_file << '\n';
+							}else if (key.compare("SUSPECT_FILE") == 0){
+								conf >> suspect_file;
+								std::cout << "SUSPECT_FILE\t\t" << suspect_file << '\n';
+							}else if (key.compare("SUBFLOW_LIFECYCLE_FILE") == 0){
+								conf >> subflow_lifecycle_file;
+								std::cout << "SUBFLOW_LIFECYCLE_FILE\t" << subflow_lifecycle_file << '\n';
+							}else if (key.compare("AGGFLOW_TIMELINE_FILE") == 0){
+								conf >> aggflow_timeline_file;
+								std::cout << "AGGFLOW_TIMELINE_FILE\t" << aggflow_timeline_file << '\n';
+							}else if (key.compare("ENABLE_ATTACKER") == 0){
+								uint32_t v;
+								conf >> v;
+								enable_attacker = v;
+								std::cout << "ENABLE_ATTACKER\t\t" << enable_attacker << '\n';
+							}else if (key.compare("ATTACKER_FILE") == 0){
+								conf >> attacker_file;
+								std::cout << "ATTACKER_FILE\t\t" << attacker_file << '\n';
+							}else if (key.compare("ATTACKER_DST") == 0){
+								conf >> attacker_dst;
+								std::cout << "ATTACKER_DST\t\t" << attacker_dst << '\n';
+							}else if (key.compare("ATTACKER_PG") == 0){
+								conf >> attacker_pg;
+								std::cout << "ATTACKER_PG\t\t" << attacker_pg << '\n';
+							}else if (key.compare("ATTACKER_DPORT") == 0){
+								conf >> attacker_dport;
+								std::cout << "ATTACKER_DPORT\t\t" << attacker_dport << '\n';
+							}else if (key.compare("ATTACKER_MAX_PACKET_COUNT") == 0){
+								conf >> attacker_maxPacketCount;
+								std::cout << "ATTACKER_MAX_PACKET_COUNT\t" << attacker_maxPacketCount << '\n';
+							}
+							else if (key.compare("EPOCH_TIME") == 0){
+				conf >> epoch_time;
+				std::cout << "EPOCH_TIME\t\t\t" << epoch_time << '\n';
+			}
+							else if (key.compare("NO_CC_NODE") == 0){
 				int n_k ;
 				conf >> n_k;
 				std::cout << "NO_CC_NODE\t\t\t";
@@ -904,6 +1170,8 @@ int main(int argc, char *argv[])
 
 #if ENABLE_QP
 	FILE *fct_output = fopen(fct_output_file.c_str(), "w");
+        subflow_lifecycle_fp = fopen(subflow_lifecycle_file.c_str(), "w");
+        aggflow_timeline_fp = fopen(aggflow_timeline_file.c_str(), "w");
 	//
 	// install RDMA driver
 	//
