@@ -36,7 +36,9 @@
 #include <ns3/rdma-driver.h>
 #include <stdlib.h>
 #include <stdio.h>
-
+#include "ns3/data-rate.h"
+#include "ns3/rdma-queue-pair.h"
+#include "ns3/rdma-driver.h"
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("RdmaClient");
@@ -48,6 +50,11 @@ RdmaClient::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::RdmaClient")
     .SetParent<Application> ()
     .AddConstructor<RdmaClient> ()
+    .AddAttribute ("DataRate",
+               "Per-flow max sending rate (upper bound). 0 means NIC line rate.",
+               DataRateValue (DataRate (0)),
+               MakeDataRateAccessor (&RdmaClient::m_rate),
+               MakeDataRateChecker ())//添加设置速率属性
     .AddAttribute ("WriteSize",
                    "The number of bytes to write",
                    UintegerValue (10000),
@@ -123,8 +130,9 @@ void RdmaClient::SetSize(uint64_t size){
 }
 
 void RdmaClient::Finish(){
-	m_node->DeleteApplication(this);
-}
+  if(Simulator::Now() >= m_stopTime) 
+	  ;// m_node->DeleteApplication(this);
+}//add
 
 void RdmaClient::DoDispose (void)
 {
@@ -134,17 +142,43 @@ void RdmaClient::DoDispose (void)
 
 void RdmaClient::StartApplication (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
-  // get RDMA driver and add up queue pair
-  Ptr<Node> node = GetNode();
-  Ptr<RdmaDriver> rdma = node->GetObject<RdmaDriver>();
-  rdma->AddQueuePair(m_size, m_pg, m_sip, m_dip, m_sport, m_dport, m_win, m_baseRtt, MakeCallback(&RdmaClient::Finish, this));
+        //NS_LOG_FUNCTION_NOARGS ();
+        Ptr<Node> node = GetNode();
+        m_rdma = node->GetObject<RdmaDriver>();
+        if(m_rate == DataRate("0b/s")){
+                m_rdma->AddQueuePair(m_size, m_pg, m_sip, m_dip, m_sport, m_dport, m_win, m_baseRtt, MakeCallback(&RdmaClient::Finish, this), MakeCallback(&RdmaClient::NewQp, this));
+                printf("Node %d have set m_rate to MAX\n", node->GetId());
+        }else{
+                m_rdma->AddQueuePair(m_size, m_pg, m_sip, m_dip, m_sport, m_dport, m_win, m_baseRtt, m_rate, MakeCallback(&RdmaClient::Finish, this), MakeCallback(&RdmaClient::NewQp, this));
+                printf("Node %d have set m_rate to %ld Gbps\n", node->GetId(), (long int)(m_rate.GetBitRate()/1e9));
+        }
 }
-
+//add
 void RdmaClient::StopApplication ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
-  // TODO stop the queue pair
+        NS_LOG_FUNCTION_NOARGS ();
+        hasStop = true;
 }
 
+Ptr<RdmaQueuePair> RdmaClient::NewQp(void)
+{
+        if(hasStop) {
+                printf("Client in node %d has stop, so no newQp. time=%f\n", GetNode()->GetId(), Simulator::Now().GetSeconds());
+                return nullptr;
+        }
+        Time now = Simulator::Now();
+        m_sport += 2;
+        
+        Ptr<RdmaQueuePair> qp;
+        if(m_rate == DataRate("0b/s"))
+                qp = m_rdma->OnlyAddQueuePair(m_size, m_pg, m_sip, m_dip, m_sport, m_dport, m_win, m_baseRtt, MakeCallback(&RdmaClient::Finish, this), MakeCallback(&RdmaClient::NewQp, this));
+        else
+                qp = m_rdma->OnlyAddQueuePair(m_size, m_pg, m_sip, m_dip, m_sport, m_dport, m_win, m_baseRtt, m_rate, MakeCallback(&RdmaClient::Finish, this), MakeCallback(&RdmaClient::NewQp, this));
+        
+        if(qp == nullptr)
+                printf("ERROR: Client In Node %d Not Stop, But Create A Nullptr In RdmaClient::NewQp!!!\n", GetNode()->GetId());
+        
+        return qp;
+}
+//add
 } // Namespace ns3

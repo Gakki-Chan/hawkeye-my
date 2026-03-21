@@ -28,7 +28,9 @@
 #include "ns3/ptr.h"
 #include "ns3/ipv4-address.h"
 #include <ns3/rdma.h>
-
+#include "ns3/data-rate.h"
+#include "ns3/rdma-queue-pair.h"
+#include "ns3/rdma-driver.h"
 namespace ns3 {
 
 class Socket;
@@ -60,7 +62,11 @@ public:
   void SetPG (uint16_t pg);
   void SetSize(uint64_t size);
   void Finish();
-
+  
+  Ptr<RdmaQueuePair> NewQp(void);
+    Ptr<RdmaDriver> m_rdma;
+  bool hasStop = false;
+  DataRate m_rate;
 protected:
   virtual void DoDispose (void);
 

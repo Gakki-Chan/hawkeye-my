@@ -50,7 +50,7 @@ public:
    * \param ip The IP address of the remote udp server
    * \param port The port number of the remote udp server
    */
-
+  RdmaClientHelper (uint16_t pg, Ipv4Address sip, Ipv4Address dip, uint16_t sport, uint16_t dport, uint64_t size, uint32_t win, uint64_t baseRtt,DataRate rate);
   RdmaClientHelper (uint16_t pg, Ipv4Address sip, Ipv4Address dip, uint16_t sport, uint16_t dport, uint64_t size, uint32_t win, uint64_t baseRtt);
 
   /**

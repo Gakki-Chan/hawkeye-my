@@ -1,6 +1,6 @@
 import json
 
-SWITCH_LIST = [9, 10, 11, 12]
+SWITCH_LIST = [0, 1, 2, 3]
 
 def sim_pkt_queue(flows, pktnums, queuedepths):
     flownum = len(flows)
@@ -89,23 +89,6 @@ def parse_telemetry(switch_dict, switch_list):
                 epoch = "epoch_"+line.split()[1]
             elif teleflag and line == '\n':
                 teleflag = False
-                
-                agg_data = switch_dict[str(swicth_id)][time][epoch][port].get('_agg_data', {})
-                flows = []
-                pktnums = []
-                queuedepths = []
-                for f, data in agg_data.items():
-                    flows.append(f)
-                    pktnums.append(data['pktnum'])
-                    if (data['pktnum'] - data['paused']) == 0:
-                        queuedepths.append(0)
-                    else:
-                        queuedepths.append(int(data['qdepth_sum'] / (data['pktnum'] - data['paused'])))
-                
-                # remove the temporary _agg_data
-                if '_agg_data' in switch_dict[str(swicth_id)][time][epoch][port]:
-                    del switch_dict[str(swicth_id)][time][epoch][port]['_agg_data']
-
                 degrees = sim_pkt_queue(flows, pktnums, queuedepths)
                 if degrees is not None:
                     switch_dict[str(swicth_id)][time][epoch][port]["p2f_weight"] = degrees
@@ -133,24 +116,16 @@ def parse_telemetry(switch_dict, switch_list):
                 trafficmeter[port] = int(lines[line_idx+2][:-1])
                 inport = line[:-1].split()[4]
             elif teleflag:
-                srcIp = line.split()[1]
-                dstIp = line.split()[2]
-                flow = srcIp + "->" + dstIp
+                flow = line.split()[1]+"->"+line.split()[2]
                 pktnum = int(line.split()[8])
-                qdepth_sum = int(line.split()[9])
                 paused = int(line.split()[10])
-                
-                if flow not in switch_dict[str(swicth_id)][time][epoch][port]["f2p_weight"]:
-                    switch_dict[str(swicth_id)][time][epoch][port]["f2p_weight"][flow] = 0
-                    # We will aggregate in temporary structures, then build the final list
-                    if not hasattr(switch_dict[str(swicth_id)][time][epoch][port], '_agg_data'):
-                        switch_dict[str(swicth_id)][time][epoch][port]['_agg_data'] = {}
-                    switch_dict[str(swicth_id)][time][epoch][port]['_agg_data'][flow] = {'pktnum': 0, 'qdepth_sum': 0, 'paused': 0}
-                
-                switch_dict[str(swicth_id)][time][epoch][port]['_agg_data'][flow]['pktnum'] += pktnum
-                switch_dict[str(swicth_id)][time][epoch][port]['_agg_data'][flow]['qdepth_sum'] += qdepth_sum
-                switch_dict[str(swicth_id)][time][epoch][port]['_agg_data'][flow]['paused'] += paused
-                switch_dict[str(swicth_id)][time][epoch][port]["f2p_weight"][flow] += paused
+                flows.append(flow)
+                pktnums.append(pktnum)
+                switch_dict[str(swicth_id)][time][epoch][port]["f2p_weight"][flow] = paused
+                if (int(line.split()[8])-int(line.split()[10])) == 0:
+                    queuedepths.append(0)
+                else:
+                    queuedepths.append(int(int(line.split()[9]) / (int(line.split()[8])-int(line.split()[10]))))
 
             line_idx += 1
 

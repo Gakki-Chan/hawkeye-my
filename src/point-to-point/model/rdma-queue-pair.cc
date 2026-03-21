@@ -73,7 +73,10 @@ RdmaQueuePair::RdmaQueuePair(uint16_t pg, Ipv4Address _sip, Ipv4Address _dip, ui
 void RdmaQueuePair::SetSize(uint64_t size){
 	m_size = size;
 }
-
+void RdmaQueuePair::SetAppNotifyCallback(Callback<void> notifyAppFinish, Callback<Ptr<RdmaQueuePair>> notifyAppSentFinish){
+	m_notifyAppFinish = notifyAppFinish;
+    	m_notifyAppSentFinish = notifyAppSentFinish;
+}//add
 void RdmaQueuePair::SetWin(uint32_t win){
 	m_win = win;
 }

@@ -202,6 +202,83 @@ void RdmaHw::Setup(QpCompleteCallback cb){
 	// setup qp complete callback
 	m_qpCompleteCallback = cb;
 }
+Ptr<RdmaQueuePair> RdmaHw::OnlyAddQueuePair(uint64_t size, uint16_t pg, Ipv4Address sip, Ipv4Address dip, uint16_t sport, uint16_t dport, uint32_t win, uint64_t baseRtt, Callback<void> notifyAppFinish, Callback<Ptr<RdmaQueuePair>> notifyAppSentFinish){
+	// create qp
+	Ptr<RdmaQueuePair> qp = CreateObject<RdmaQueuePair>(pg, sip, dip, sport, dport);
+	qp->SetSize(size);
+	qp->SetWin(win);
+	qp->SetBaseRtt(baseRtt);
+	qp->SetVarWin(m_var_win);
+	qp->SetAppNotifyCallback(notifyAppFinish, notifyAppSentFinish);
+
+	// add qp
+	uint32_t nic_idx = GetNicIdxOfQp(qp);
+	m_nic[nic_idx].qpGrp->AddQp(qp); // this Ptr m_nic[i].qpGrp == m_nic[i].dev.m_rdmaEQ.m_qpGrp. It is set in RdmaHw::SetUp().
+	uint64_t key = GetQpKey(dip.Get(), sport, pg);
+	m_qpMap[key] = qp;
+
+	// set init variables
+	DataRate m_bps = m_nic[nic_idx].dev->GetDataRate();
+	qp->m_rate = m_bps;
+	qp->m_max_rate = m_bps;
+	if (m_cc_mode == 1){
+		qp->mlx.m_targetRate = m_bps;
+	}else if (m_cc_mode == 3){
+		qp->hp.m_curRate = m_bps;
+		if (m_multipleRate){
+			for (uint32_t i = 0; i < IntHeader::maxHop; i++)
+				qp->hp.hopState[i].Rc = m_bps;
+		}
+	}else if (m_cc_mode == 7){
+		qp->tmly.m_curRate = m_bps;
+	}else if (m_cc_mode == 10){
+		qp->hpccPint.m_curRate = m_bps;
+	}
+
+	//设置时间
+	qp->m_nextAvail = Simulator::Now();
+	if(qp==nullptr)printf("空的!!!\n");
+	return qp;
+}//add
+
+Ptr<RdmaQueuePair> RdmaHw::OnlyAddQueuePair(uint64_t size, uint16_t pg, Ipv4Address sip, Ipv4Address dip, uint16_t sport, uint16_t dport, uint32_t win, uint64_t baseRtt, DataRate rate, Callback<void> notifyAppFinish, Callback<Ptr<RdmaQueuePair>> notifyAppSentFinish){
+	// create qp
+	Ptr<RdmaQueuePair> qp = CreateObject<RdmaQueuePair>(pg, sip, dip, sport, dport);
+	qp->SetSize(size);
+	qp->SetWin(win);
+	qp->SetBaseRtt(baseRtt);
+	qp->SetVarWin(m_var_win);
+	qp->SetAppNotifyCallback(notifyAppFinish, notifyAppSentFinish);
+
+	// add qp
+	uint32_t nic_idx = GetNicIdxOfQp(qp);
+	m_nic[nic_idx].qpGrp->AddQp(qp); // this Ptr m_nic[i].qpGrp == m_nic[i].dev.m_rdmaEQ.m_qpGrp. It is set in RdmaHw::SetUp().
+	uint64_t key = GetQpKey(dip.Get(), sport, pg);
+	m_qpMap[key] = qp;
+
+	// set init variables
+	DataRate m_bps = m_nic[nic_idx].dev->GetDataRate();
+	qp->m_rate = rate;
+	qp->m_max_rate = m_bps;
+	if (m_cc_mode == 1){
+		qp->mlx.m_targetRate = m_bps;
+	}else if (m_cc_mode == 3){
+		qp->hp.m_curRate = rate;
+		if (m_multipleRate){
+			for (uint32_t i = 0; i < IntHeader::maxHop; i++)
+				qp->hp.hopState[i].Rc = m_bps;
+		}
+	}else if (m_cc_mode == 7){
+		qp->tmly.m_curRate = rate;
+	}else if (m_cc_mode == 10){
+		qp->hpccPint.m_curRate = rate;
+	}
+
+	//设置时间
+	qp->m_nextAvail = Simulator::Now();
+	//if(qp==nullptr) printf("空的!!!\n");
+	return qp;
+}//add
 
 uint32_t RdmaHw::GetNicIdxOfQp(Ptr<RdmaQueuePair> qp){
 	auto &v = m_rtTable[qp->dip.Get()];
@@ -221,18 +298,18 @@ Ptr<RdmaQueuePair> RdmaHw::GetQp(uint32_t dip, uint16_t sport, uint16_t pg){
 		return it->second;
 	return NULL;
 }
-void RdmaHw::AddQueuePair(uint64_t size, uint16_t pg, Ipv4Address sip, Ipv4Address dip, uint16_t sport, uint16_t dport, uint32_t win, uint64_t baseRtt, Callback<void> notifyAppFinish){
+void RdmaHw::AddQueuePair(uint64_t size, uint16_t pg, Ipv4Address sip, Ipv4Address dip, uint16_t sport, uint16_t dport, uint32_t win, uint64_t baseRtt, Callback<void> notifyAppFinish, Callback<Ptr<RdmaQueuePair>> notifyAppSentFinish){
 	// create qp
 	Ptr<RdmaQueuePair> qp = CreateObject<RdmaQueuePair>(pg, sip, dip, sport, dport);
 	qp->SetSize(size);
 	qp->SetWin(win);
 	qp->SetBaseRtt(baseRtt);
 	qp->SetVarWin(m_var_win);
-	qp->SetAppNotifyCallback(notifyAppFinish);
+	qp->SetAppNotifyCallback(notifyAppFinish, notifyAppSentFinish);
 
 	// add qp
 	uint32_t nic_idx = GetNicIdxOfQp(qp);
-	m_nic[nic_idx].qpGrp->AddQp(qp);
+	m_nic[nic_idx].qpGrp->AddQp(qp); // this Ptr m_nic[i].qpGrp == m_nic[i].dev.m_rdmaEQ.m_qpGrp. It is set in RdmaHw::SetUp().
 	uint64_t key = GetQpKey(dip.Get(), sport, pg);
 	m_qpMap[key] = qp;
 
@@ -257,6 +334,44 @@ void RdmaHw::AddQueuePair(uint64_t size, uint16_t pg, Ipv4Address sip, Ipv4Addre
 	// Notify Nic
 	m_nic[nic_idx].dev->NewQp(qp);
 }
+
+void RdmaHw::AddQueuePair(uint64_t size, uint16_t pg, Ipv4Address sip, Ipv4Address dip, uint16_t sport, uint16_t dport, uint32_t win, uint64_t baseRtt, DataRate rate, Callback<void> notifyAppFinish, Callback<Ptr<RdmaQueuePair>> notifyAppSentFinish){
+	// create qp
+	Ptr<RdmaQueuePair> qp = CreateObject<RdmaQueuePair>(pg, sip, dip, sport, dport);
+	qp->SetSize(size);
+	qp->SetWin(win);
+	qp->SetBaseRtt(baseRtt);
+	qp->SetVarWin(m_var_win);
+	qp->SetAppNotifyCallback(notifyAppFinish, notifyAppSentFinish);
+
+	// add qp
+	uint32_t nic_idx = GetNicIdxOfQp(qp);
+	m_nic[nic_idx].qpGrp->AddQp(qp); // this Ptr m_nic[i].qpGrp == m_nic[i].dev.m_rdmaEQ.m_qpGrp. It is set in RdmaHw::SetUp().
+	uint64_t key = GetQpKey(dip.Get(), sport, pg);
+	m_qpMap[key] = qp;
+
+	// set init variables
+	DataRate m_bps = m_nic[nic_idx].dev->GetDataRate();
+	qp->m_rate = rate;
+	qp->m_max_rate = m_bps;
+	if (m_cc_mode == 1){
+		qp->mlx.m_targetRate = m_bps;
+	}else if (m_cc_mode == 3){
+		qp->hp.m_curRate = rate;
+		if (m_multipleRate){
+			for (uint32_t i = 0; i < IntHeader::maxHop; i++)
+				qp->hp.hopState[i].Rc = m_bps;
+		}
+	}else if (m_cc_mode == 7){
+		qp->tmly.m_curRate = rate;
+	}else if (m_cc_mode == 10){
+		qp->hpccPint.m_curRate = rate;
+	}
+
+	// Notify Nic
+	m_nic[nic_idx].dev->NewQp(qp);
+}
+
 
 void RdmaHw::DeleteQueuePair(Ptr<RdmaQueuePair> qp){
 	// remove qp from the m_qpMap
@@ -554,7 +669,8 @@ void ScheduleAckClock(uint64_t seq, Ptr<RdmaQueuePair> qp, Ptr<QbbNetDevice> dev
 	}
 
 	uint64_t interval = Simulator::Now().GetTimeStep() - qp->npa.m_lastPollingTime;
-	if(interval > 3000000){
+	if(interval > 1000000){//它最小间隔300000ns才发包
+		//这里修改成1ms更好一些吧
 		qp->npa.m_lastPollingTime = Simulator::Now().GetTimeStep();
 
 		Ptr<Packet> p = Create<Packet>(0);
@@ -627,6 +743,12 @@ Ptr<Packet> RdmaHw::GetNxtPacket(Ptr<RdmaQueuePair> qp){
 void RdmaHw::PktSent(Ptr<RdmaQueuePair> qp, Ptr<Packet> pkt, Time interframeGap){
 	qp->lastPktSize = pkt->GetSize();
 	UpdateNextAvail(qp, interframeGap, pkt->GetSize());
+	if(qp->GetBytesLeft() == 0)
+	{
+		Ptr<RdmaQueuePair> newqp = qp->m_notifyAppSentFinish();
+		if(newqp != nullptr)
+			newqp->m_nextAvail = qp->m_nextAvail;
+	}//add
 }
 
 void RdmaHw::UpdateNextAvail(Ptr<RdmaQueuePair> qp, Time interframeGap, uint32_t pkt_size){

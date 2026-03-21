@@ -107,7 +107,7 @@ public:
 
 	// for RDMA NPA detect
 	FILE *fp_telemetry = NULL;
-	uint32_t epochTime = 1000000;
+	uint32_t epochTime = 500000;
 };
 
 } /* namespace ns3 */

@@ -29,7 +29,8 @@ public:
 	uint32_t wp; // current window of packets
 	uint32_t lastPktSize;
 	Callback<void> m_notifyAppFinish;
-
+	
+	Callback<Ptr<RdmaQueuePair>> m_notifyAppSentFinish; //add
 	/******************************
 	 * runtime states
 	 *****************************/
@@ -93,7 +94,7 @@ public:
 	void SetBaseRtt(uint64_t baseRtt);
 	void SetVarWin(bool v);
 	void SetAppNotifyCallback(Callback<void> notifyAppFinish);
-
+    void SetAppNotifyCallback(Callback<void> notifyAppFinish, Callback<Ptr<RdmaQueuePair>> notifyAppSentFinish);
 	uint64_t GetBytesLeft();
 	uint32_t GetHash(void);
 	void Acknowledge(uint64_t ack);
