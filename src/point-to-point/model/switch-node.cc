@@ -191,6 +191,23 @@ void SwitchNode::OutputTelemetry(uint32_t port, uint32_t inport, bool isSignal){
 	fflush(fp_telemetry);
 }
 
+int SwitchNode::GetOutDevToAnalysis(){
+	auto entry = m_rtTable.find(m_analysis_addr.Get());
+	
+	if (entry == m_rtTable.end())		// 在路由表中，此目的ip没有对应的下一跳出口vector
+		return -1;
+		
+	auto &nexthops = entry->second;
+
+	return nexthops[0];//TODO:error
+}//发送给 analysis 的设备
+void SwitchNode::SendSignalToAnalysis(){
+	// Get idx
+	int idx = GetOutDevToAnalysis();
+	// Create and Send p to analysis server
+	Ptr<QbbNetDevice> device = DynamicCast<QbbNetDevice>(m_devices[idx]);
+	device->SendAnalysis(event_id, m_analysis_addr);
+}//add 发送给分析服务器
 void SwitchNode::SendToDev(Ptr<Packet>p, CustomHeader &ch){
 	//RDMA NPA : signal packet parse
 	if (ch.l3Prot == 0xFB){
@@ -215,6 +232,7 @@ void SwitchNode::SendToDev(Ptr<Packet>p, CustomHeader &ch){
 			}
 		}
 		fprintf(fp_telemetry,"end\n\n");
+		SendSignalToAnalysis();
 		return;	
 	}
 	//RDMA NPA : polling packet parse 
@@ -234,6 +252,7 @@ void SwitchNode::SendToDev(Ptr<Packet>p, CustomHeader &ch){
 		fprintf(fp_telemetry,"\npolling\n\n");
 		OutputTelemetry(idx, inDev, false);
 		fprintf(fp_telemetry,"end\n\n");
+		SendSignalToAnalysis();
 	}
 
 	int idx = GetOutDev(p, ch);

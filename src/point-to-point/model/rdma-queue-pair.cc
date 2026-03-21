@@ -75,7 +75,7 @@ void RdmaQueuePair::SetSize(uint64_t size){
 }
 void RdmaQueuePair::SetAppNotifyCallback(Callback<void> notifyAppFinish, Callback<Ptr<RdmaQueuePair>> notifyAppSentFinish){
 	m_notifyAppFinish = notifyAppFinish;
-    	m_notifyAppSentFinish = notifyAppSentFinish;
+    m_notifyAppSentFinish = notifyAppSentFinish;
 }//add
 void RdmaQueuePair::SetWin(uint32_t win){
 	m_win = win;

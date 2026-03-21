@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>	// uint32_t
+#include <stdint.h>	
 #include <iostream>
 #include <fstream>
 #include <vector>

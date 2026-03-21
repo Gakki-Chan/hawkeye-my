@@ -136,6 +136,7 @@ public:
     struct {
       uint32_t seq;
       uint32_t eventID;
+      uint32_t congestionPort;//add node id字段
     } signal; //l3Port = 0xFB, for PFC path trace
 
     struct {

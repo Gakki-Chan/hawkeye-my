@@ -92,7 +92,8 @@ private:
 
 public:
 	Ptr<SwitchMmu> m_mmu;
-
+	int GetOutDevToAnalysis();
+	void SendSignalToAnalysis();
 	static TypeId GetTypeId (void);
 	SwitchNode();
 	void SetEcmpSeed(uint32_t seed);
@@ -108,6 +109,7 @@ public:
 	// for RDMA NPA detect
 	FILE *fp_telemetry = NULL;
 	uint32_t epochTime = 500000;
+	Ipv4Address m_analysis_addr;
 };
 
 } /* namespace ns3 */

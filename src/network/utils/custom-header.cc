@@ -101,7 +101,7 @@ uint32_t CustomHeader::GetSerializedSize (void) const{
 		else if (l3Prot == 0xFE)
 			len += 9;
 		else if (l3Prot == 0xFB)
-			len += 8;	
+			len += 12;	
 		else if (l3Prot == 0xFA)
 			len += 12;
 	}
@@ -186,6 +186,7 @@ void CustomHeader::Serialize (Buffer::Iterator start) const{
 	  }else if (l3Prot == 0xFB){ 
 		i.WriteU32(signal.seq);
 		i.WriteU32(signal.eventID);
+		i.WriteU32(signal.congestionPort);
 	  }else if(l3Prot == 0xFA){ 
 		i.WriteU32(polling.seq);
 		i.WriteU32(polling.eventID);
@@ -333,7 +334,7 @@ CustomHeader::Deserialize (Buffer::Iterator start)
 	  } else if (l3Prot == 0xFB){ 
 		  signal.seq = i.ReadU32();
 		  signal.eventID = i.ReadU32();
-		  l4Size = 8;
+		  l4Size = 12;
 	  } else if(l3Prot == 0xFA){
 		polling.seq = i.ReadU32();
 		polling.eventID = i.ReadU32();

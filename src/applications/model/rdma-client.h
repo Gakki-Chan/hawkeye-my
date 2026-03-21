@@ -64,7 +64,7 @@ public:
   void Finish();
   
   Ptr<RdmaQueuePair> NewQp(void);
-    Ptr<RdmaDriver> m_rdma;
+  Ptr<RdmaDriver> m_rdma;
   bool hasStop = false;
   DataRate m_rate;
 protected:

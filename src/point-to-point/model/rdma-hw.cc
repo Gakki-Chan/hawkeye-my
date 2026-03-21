@@ -562,10 +562,34 @@ int RdmaHw::Receive(Ptr<Packet> p, CustomHeader &ch){
 		ReceiveAck(p, ch);
 	}else if (ch.l3Prot == 0xFC){ // ACK
 		ReceiveAck(p, ch);
+	}else if(ch.l3Prot == 0xFB){
+		ReceiveSignal(p, ch);
 	}
 	return 0;
 }
-
+int RdmaHw::ReceiveSignal(Ptr<Packet> p, CustomHeader &ch){//服务器或者主机才能收到
+	if(m_analysis_flag&& ch.signal.congestionPort!=0 ){//只有调用dev->sendanalysis的signal才有效，否则不做任何处理
+		
+		uint32_t nodeid = ch.signal.congestionPort;
+		if(analys_app == nullptr){ 
+			analys_app = CreateObject<FindRootCal>();
+			analys_app->fout_path = calfout_path;
+		}
+		analys_app->SetNextHop(nextHop);
+		analys_app->ReadOneFile(nodeid);
+	}
+	// uint32_t size = m_node->GetNDevices();
+	// for(uint32_t i = 0; i < size; i++){
+	// 	Ptr<NetDevice> netdev = m_node->GetDevice(i);
+	// 	Ptr<QbbNetDevice> dev = DynamicCast<QbbNetDevice>(netdev);
+	// 	if(dev == nullptr){
+	// 		//std::cout << "Device " << i << " is not a QbbNetDevice (actual type: " << netdev->GetInstanceTypeId().GetName() << ")" << '\n';
+	// 		continue;
+	// 	}
+	// 	dev->SendSignal(0,0,0,m_node->GetId(),0);
+	// }
+	return 0;
+}
 int RdmaHw::ReceiverCheckSeq(uint32_t seq, Ptr<RdmaRxQueuePair> q, uint32_t size){
 	uint32_t expected = q->ReceiverNextExpectedSeq;
 	if (seq == expected){

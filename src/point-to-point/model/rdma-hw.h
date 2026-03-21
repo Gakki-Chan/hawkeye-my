@@ -157,6 +157,10 @@ public:
 	//RDMA NPA
 	bool m_agent_flag;
 	int m_agent_threshold;
+	bool m_analysis_flag;
+	std::string calfout_path;
+	Ptr<FindRootCal> analys_app = nullptr;
+	std::map<Ptr<Node>, std::map<Ptr<Node>, std::vector<Ptr<Node>> > > *nextHop = NULL;
 };
 
 } /* namespace ns3 */

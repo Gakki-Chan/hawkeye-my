@@ -70,7 +70,7 @@ double pint_prob = 1.0;
 double u_target = 0.95;
 uint32_t int_multi = 1;
 bool rate_bound = true;
-
+uint32_t analysis_node;
 uint32_t ack_high_prio = 0;
 uint64_t link_down_time = 0;
 uint32_t link_down_A = 0, link_down_B = 0;
@@ -307,7 +307,8 @@ void CalculateRoute(Ptr<Node> host){
 			}
 			// if 'now' is on the shortest path from 'next' to 'host'.
 			if (d + 1 == dis[next]){
-				nextHop[next][host].push_back(now);
+				if(now->GetId()!=analysis_node || host->GetId()==analysis_node)//新增analysis_node逻辑
+					nextHop[next][host].push_back(now);
 			}
 		}
 	}
@@ -791,8 +792,10 @@ int main(int argc, char *argv[])
 	flowf >> flow_num;
 	tracef >> trace_num;
 
-	
+	node_num++;//add 分析服务器
+	analysis_node = node_num-1;
 	//n.Create(node_num);
+	
 	std::vector<uint32_t> node_type(node_num, 0);
 	for (uint32_t i = 0; i < switch_num; i++)
 	{
@@ -908,16 +911,57 @@ int main(int argc, char *argv[])
 		DynamicCast<QbbNetDevice>(d.Get(0))->TraceConnectWithoutContext("QbbPfc", MakeBoundCallback (&get_pfc, pfc_file, DynamicCast<QbbNetDevice>(d.Get(0))));
 		DynamicCast<QbbNetDevice>(d.Get(1))->TraceConnectWithoutContext("QbbPfc", MakeBoundCallback (&get_pfc, pfc_file, DynamicCast<QbbNetDevice>(d.Get(1))));
 	}
-
+	//add 分析器和switch之间的链路
+	Ipv4InterfaceContainer interfaces;
+	for (uint32_t i = 0; i < node_num; i++){
+            Ptr<Node> snode = n.Get(i), dnode = n.Get(analysis_node);
+	        if (snode->GetNodeType() == 1){ // 如果是switch，就为它和分析器建立链路
+	            uint32_t src = i, dst = analysis_node;
+                        // 设置点到点链路 
+		        qbb.SetDeviceAttribute("DataRate", StringValue("100Gbps"));    
+		        qbb.SetChannelAttribute("Delay", StringValue("0.001ms"));     
+		        
+		        fflush(stdout);
+		        
+		        NetDeviceContainer d = qbb.Install(snode, dnode);
+		        if (snode->GetNodeType() == 0){                                 
+			        Ptr<Ipv4> ipv4 = snode->GetObject<Ipv4>();
+			        uint32_t in = ipv4->AddInterface(d.Get(0));                           
+			        ipv4->AddAddress(in, Ipv4InterfaceAddress(serverAddress[src], Ipv4Mask(0xff000000)));
+		        }if (dnode->GetNodeType() == 0){                                 
+			        Ptr<Ipv4> ipv4 = dnode->GetObject<Ipv4>();
+			        uint32_t in = ipv4->AddInterface(d.Get(1));
+			        ipv4->AddAddress(in, Ipv4InterfaceAddress(serverAddress[dst], Ipv4Mask(0xff000000)));
+		        }
+		        // used to create a graph of the topology
+		        nbr2if[snode][dnode].idx = DynamicCast<QbbNetDevice>(d.Get(0))->GetIfIndex();
+		        nbr2if[snode][dnode].up = true;
+		        nbr2if[snode][dnode].delay = DynamicCast<QbbChannel>(DynamicCast<QbbNetDevice>(d.Get(0))->GetChannel())->GetDelay().GetTimeStep();
+		        nbr2if[snode][dnode].bw = DynamicCast<QbbNetDevice>(d.Get(0))->GetDataRate().GetBitRate();
+		        nbr2if[dnode][snode].idx = DynamicCast<QbbNetDevice>(d.Get(1))->GetIfIndex();
+		        nbr2if[dnode][snode].up = true;
+		        nbr2if[dnode][snode].delay = DynamicCast<QbbChannel>(DynamicCast<QbbNetDevice>(d.Get(1))->GetChannel())->GetDelay().GetTimeStep();
+		        nbr2if[dnode][snode].bw = DynamicCast<QbbNetDevice>(d.Get(1))->GetDataRate().GetBitRate();
+		
+		        // 分配 IPv4 地址，用于建立节点之间的连通性。
+		        char ipstring[16];
+		        sprintf(ipstring, "10.%d.%d.0", (i+link_num) / 254 + 1, (i+link_num) % 254 + 1);
+		        ipv4.SetBase(ipstring, "255.255.255.0");
+		        interfaces = ipv4.Assign(d);
+		        
+	        }
+	}
 	nic_rate = get_nic_rate(n);
 
 	// config switch
 	for (uint32_t i = 0; i < node_num; i++){
 		if (n.Get(i)->GetNodeType() == 1){ // is switch
 			Ptr<SwitchNode> sw = DynamicCast<SwitchNode>(n.Get(i));
+			sw->m_analysis_addr = serverAddress[analysis_node];//add
 			uint32_t shift = 3; // by default 1/8
 			for (uint32_t j = 1; j < sw->GetNDevices(); j++){
 				Ptr<QbbNetDevice> dev = DynamicCast<QbbNetDevice>(sw->GetDevice(j));
+				if(dev == nullptr) continue; 
 				// set ecn
 				uint64_t rate = dev->GetDataRate().GetBitRate();
 				NS_ASSERT_MSG(rate2kmin.find(rate) != rate2kmin.end(), "must set kmin for each link speed");
@@ -994,6 +1038,13 @@ int main(int argc, char *argv[])
 				rdmaHw->m_agent_flag = false;
 			if(no_cc_nodes.find(i) != no_cc_nodes.end())
 				rdmaHw->SetAttribute("CcMode", UintegerValue(0));
+			if(i == analysis_node){
+			        rdmaHw->m_analysis_flag = true;
+			        rdmaHw->nextHop = &nextHop;
+			        rdmaHw->calfout_path = "mix/find_root_cal.txt";
+			}else{
+			        rdmaHw->m_analysis_flag = false;
+			}//rdmaHw属性 add
 			// create and install RdmaDriver
 			Ptr<RdmaDriver> rdma = CreateObject<RdmaDriver>();
 			Ptr<Node> node = n.Get(i);

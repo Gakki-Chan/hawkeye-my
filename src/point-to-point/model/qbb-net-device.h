@@ -115,7 +115,7 @@ public:
   void DisconnectWithoutContext(const CallbackBase& callback);
 
   bool Attach (Ptr<QbbChannel> ch);
-
+  void SendAnalysis(uint32_t eventID, Ipv4Address dst_addr,uint32_t congestionPort);
    virtual Ptr<Channel> GetChannel (void) const;
 
    void SetQueue (Ptr<BEgressQueue> q);
@@ -129,7 +129,7 @@ public:
 
   // RDMA NPA
   bool GetEgressPaused(uint32_t qIndex);
-  void SendSignal(uint32_t eventID);
+  void SendSignal(uint32_t eventID,uint32_t congestionPort);
 
 	TracedCallback<Ptr<const Packet>, uint32_t> m_traceEnqueue;
 	TracedCallback<Ptr<const Packet>, uint32_t> m_traceDequeue;
