@@ -209,7 +209,7 @@ void FindRootCal::ReadAllFiles(std::vector<std::string> fileNames){
 void FindRootCal::ReadOneFile(uint32_t node){
 	
 	// 算出所有 flow to currNode + 流争用
-	std::string filename = "mix/telemetry_" + std::to_string(node) + ".txt";
+	std::string filename = "mix/data/telemetry_" + std::to_string(node) + ".txt";
 	ReadFileForPause(filename);
 	
 	// 算出所有 Node to nextNode
@@ -231,7 +231,7 @@ void FindRootCal::ReadFileForPause(std::string &filename){
 	size_t len = 0;
 		
 	node=0;
-	for(int i = 14; filename[i] != '.'; i++){
+	for(int i = 19; filename[i] != '.'; i++){
 		node = (node * 10) + filename[i] - '0';
 	}
 		

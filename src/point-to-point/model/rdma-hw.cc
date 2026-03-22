@@ -578,16 +578,14 @@ int RdmaHw::ReceiveSignal(Ptr<Packet> p, CustomHeader &ch){//服务器或者主�
 		analys_app->SetNextHop(nextHop);
 		analys_app->ReadOneFile(nodeid);
 	}
-	// uint32_t size = m_node->GetNDevices();
-	// for(uint32_t i = 0; i < size; i++){
-	// 	Ptr<NetDevice> netdev = m_node->GetDevice(i);
-	// 	Ptr<QbbNetDevice> dev = DynamicCast<QbbNetDevice>(netdev);
-	// 	if(dev == nullptr){
-	// 		//std::cout << "Device " << i << " is not a QbbNetDevice (actual type: " << netdev->GetInstanceTypeId().GetName() << ")" << '\n';
-	// 		continue;
-	// 	}
-	// 	dev->SendSignal(0,0,0,m_node->GetId(),0);
-	// }
+	uint32_t size = m_node->GetNDevices();
+	for(uint32_t i = 0; i < size; i++){
+		Ptr<NetDevice> netdev = m_node->GetDevice(i);
+		Ptr<QbbNetDevice> dev = DynamicCast<QbbNetDevice>(netdev);
+		if(dev == nullptr)
+			continue;
+		dev->SendSignal(ch.signal.eventID,m_node->GetId());
+	}//add 如果服务器收到signal,广播发送signal数据包
 	return 0;
 }
 int RdmaHw::ReceiverCheckSeq(uint32_t seq, Ptr<RdmaRxQueuePair> q, uint32_t size){

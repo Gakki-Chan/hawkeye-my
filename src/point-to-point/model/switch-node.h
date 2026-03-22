@@ -56,10 +56,20 @@ class SwitchNode : public Node{
 		uint32_t packetNum;		// 32-bit packet_num
 		uint32_t enqQdepth;		// 32-bit enq_q_depth
 		uint32_t pfcPausedPacketNum;	// 32-bit pfc_paused_packet_num
+		uint32_t totalFwdBytes, totalBwdBytes; 
+		uint32_t ackCount, nackCount;
+		int flowWeight, nodeWeight;//add 
 
-		FiveTuple flowTuple;			// 5-tuple
+		FiveTuple flowTuple;			// 5-tuple		
 		uint64_t lastTimeStep;		// last timestep
+		float startTimeSeconds;					
+		float endTimeSeconds;			
+		float durationSeconds;	//add
+		uint32_t packetFwdNum;	
 	};
+	uint64_t m_lastUpdateWeight = 0;
+	int m_flowWeight[flowEntryNum];
+	std::vector<int> m_nodeWeight;
 	struct PortTelemetryData{
 		uint32_t enqQdepth;		// 32-bit enq_q_depth
 		uint32_t pfcPausedPacketNum;
@@ -93,7 +103,7 @@ private:
 public:
 	Ptr<SwitchMmu> m_mmu;
 	int GetOutDevToAnalysis();
-	void SendSignalToAnalysis();
+	void SendSignalToAnalysis(uint32_t event_id);
 	static TypeId GetTypeId (void);
 	SwitchNode();
 	void SetEcmpSeed(uint32_t seed);
@@ -101,13 +111,15 @@ public:
 	void ClearTable();
 	bool SwitchReceiveFromDevice(Ptr<NetDevice> device, Ptr<Packet> packet, CustomHeader &ch);
 	void SwitchNotifyDequeue(uint32_t ifIndex, uint32_t qIndex, Ptr<Packet> p);
-
+	void WriteFlowEntry(uint32_t idx,uint32_t epoch,uint32_t flowid);
+	void UpdateFlowWeight();
 	// for approximate calc in PINT
 	int logres_shift(int b, int l);
 	int log2apprx(int x, int b, int m, int l); // given x of at most b bits, use most significant m bits of x, calc the result in l bits
 
 	// for RDMA NPA detect
 	FILE *fp_telemetry = NULL;
+	FILE *fp_flowdata = NULL;	
 	uint32_t epochTime = 500000;
 	Ipv4Address m_analysis_addr;
 };

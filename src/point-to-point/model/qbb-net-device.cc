@@ -424,14 +424,14 @@ namespace ns3 {
 		SwitchSend(0, p, ch);
 	}
 
-	void QbbNetDevice::SendSignal(uint32_t eventID,uint32_t congestionPort=0){
+	void QbbNetDevice::SendSignal(uint32_t eventID,uint32_t congestionPort){
 		Ptr<Packet> p = Create<Packet>(0);
 
 		Ipv4Header ipv4h;
 		ipv4h.SetProtocol(0xFB);
 		ipv4h.SetSource(m_node->GetObject<Ipv4>()->GetAddress(m_ifIndex, 0).GetLocal());
 		ipv4h.SetDestination(Ipv4Address("255.255.255.255"));
-		ipv4h.SetPayloadSize(9);
+		ipv4h.SetPayloadSize(12);
 		ipv4h.SetTtl(1);
 		ipv4h.SetIdentification(UniformVariable(0, 65536).GetValue());
 		p->AddHeader(ipv4h);
@@ -448,14 +448,14 @@ namespace ns3 {
 		p->AddHeader(ch);
 		SwitchSend(0, p, ch);
 	}
-		void QbbNetDevice::SendAnalysis(uint32_t eventID,Ipv4Address dst_addr,uint32_t congestionPort=0){
+		void QbbNetDevice::SendAnalysis(uint32_t eventID,Ipv4Address dst_addr,uint32_t congestionPort){
 		Ptr<Packet> p = Create<Packet>(0);
                 // 将IPv4头部添加到数据包中。
 		Ipv4Header ipv4h;  
 		ipv4h.SetProtocol(0xFB);
 		ipv4h.SetSource(m_node->GetObject<Ipv4>()->GetAddress(m_ifIndex, 0).GetLocal());
 		ipv4h.SetDestination(dst_addr);
-		ipv4h.SetPayloadSize(9);	
+		ipv4h.SetPayloadSize(12);	
 		ipv4h.SetTtl(1);
 		ipv4h.SetIdentification(UniformVariable(0, 65536).GetValue());
 		p->AddHeader(ipv4h);
@@ -466,7 +466,7 @@ namespace ns3 {
 		ch.signal.eventID = eventID;
 		ch.signal.congestionPort = m_node->GetId();
 		uint16_t temp;
-		ProcessHeader(p, temp);// remove ppp header and get eth(protocol)
+		ProcessHeader(p, temp);
 		p->RemoveHeader(ipv4h);
 		p->AddHeader(ch);
 		

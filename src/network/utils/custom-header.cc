@@ -332,8 +332,10 @@ CustomHeader::Deserialize (Buffer::Iterator start)
 		  pfc.qIndex = i.ReadU8 ();
 		  l4Size = 9;
 	  } else if (l3Prot == 0xFB){ 
+		
 		  signal.seq = i.ReadU32();
 		  signal.eventID = i.ReadU32();
+		  signal.congestionPort = i.ReadU32();
 		  l4Size = 12;
 	  } else if(l3Prot == 0xFA){
 		polling.seq = i.ReadU32();
