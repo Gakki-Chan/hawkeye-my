@@ -1,0 +1,13 @@
+2 4
+0.001 0.01 0.1
+5 6
+
+
+
+4 3
+0.003 0.01 0.1
+5 6 7 8
+
+attacker_number   attack_destination
+attack_start_time   attack_duration   attack_interval
+node0   node1   node2 

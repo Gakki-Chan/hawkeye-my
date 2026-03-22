@@ -1,1 +1,16 @@
 build/
+
+# keep mix inputs tracked
+# ignore only generated outputs under mix
+mix/data/
+mix/*.tr
+mix/fct.txt
+mix/pfc.txt
+mix/qlen.txt
+mix/find_root_cal.txt
+mix/telemetry_*.txt
+mix/teleflowdata_*.txt
+
+# optional: Windows ADS artifacts
+mix/*:Zone.Identifier
+mix/data/*:Zone.Identifier
