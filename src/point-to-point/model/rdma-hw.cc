@@ -13,7 +13,7 @@
 #include "ppp-header.h"
 #include "qbb-header.h"
 #include "cn-header.h"
-
+#include "ns3/log.h"
 namespace ns3{
 
 TypeId RdmaHw::GetTypeId (void)
@@ -538,6 +538,41 @@ int RdmaHw::ReceiveAck(Ptr<Packet> p, CustomHeader &ch){
 			cnp_received_mlx(qp);
 		} 
 	}
+	//rdma
+	if(m_agent_flag){
+
+		uint64_t rtt = Simulator::Now().GetTimeStep() - ch.ack.ih.ts;
+		uint64_t interval = Simulator::Now().GetTimeStep() - qp->npa.m_lastPollingTime;
+		if(interval > 1000000){
+			if(rtt > qp->npa.m_maxRtt && rtt > 10000){
+				qp->npa.m_maxRtt = rtt;
+				qp->npa.m_lastPollingTime = Simulator::Now().GetTimeStep();
+			}
+		}
+		if(qp->npa.m_maxRtt > 10000 && (Simulator::Now().GetTimeStep() % 1000000 > 900000) ){
+				qp->npa.m_maxRtt = 0;
+				Ptr<Packet> p = Create<Packet>(0);
+				CustomHeader pollingHdr(CustomHeader::L4_Header);
+				pollingHdr.l3Prot = 0xFA;
+				pollingHdr.polling.seq = seq;
+				pollingHdr.polling.eventID = Simulator::Now().GetTimeStep() - 1000000000;
+				pollingHdr.polling.sport = qp->sport;
+				pollingHdr.polling.dport = qp->dport;
+				p->AddHeader(pollingHdr);
+				Ipv4Header head;
+				head.SetDestination(Ipv4Address(ch.sip));
+				head.SetSource(Ipv4Address(ch.dip));
+				head.SetProtocol(0xFA);
+				head.SetTtl(64);
+				head.SetPayloadSize(p->GetSize());
+				head.SetIdentification(qp->m_ipid++);
+				p->AddHeader(head);
+				
+				AddHeader(p, 0x800);
+				dev->RdmaEnqueueHighPrioQ(p);	
+				dev->TriggerTransmit();		
+			}
+	}
 
 	if (m_cc_mode == 3){
 		HandleAckHp(qp, p, ch);
@@ -568,8 +603,9 @@ int RdmaHw::Receive(Ptr<Packet> p, CustomHeader &ch){
 	return 0;
 }
 int RdmaHw::ReceiveSignal(Ptr<Packet> p, CustomHeader &ch){//服务器或者主机才能收到
-	if(m_analysis_flag&& ch.signal.congestionPort!=0 ){//只有调用dev->sendanalysis的signal才有效，否则不做任何处理
-		
+
+	if(m_analysis_flag && ch.signal.congestionPort!= 0 ){//只有调用dev->sendanalysis的signal才有效，否则不做任何处理
+		// NS_LOG_UNCOND("analy rec");
 		uint32_t nodeid = ch.signal.congestionPort;
 		if(analys_app == nullptr){ 
 			analys_app = CreateObject<FindRootCal>();
@@ -684,40 +720,40 @@ void RdmaHw::RedistributeQp(){
 }
 
 
-// RDMA NPA
-void ScheduleAckClock(uint64_t seq, Ptr<RdmaQueuePair> qp, Ptr<QbbNetDevice> dev){
-	if(seq <= qp->snd_una){
-		return;
-	}
+// // RDMA NPA
+// void ScheduleAckClock(uint64_t seq, Ptr<RdmaQueuePair> qp, Ptr<QbbNetDevice> dev){
+// 	if(seq <= qp->snd_una){
+// 		return;
+// 	}
 
-	uint64_t interval = Simulator::Now().GetTimeStep() - qp->npa.m_lastPollingTime;
-	if(interval > 1000000){//它最小间隔300000ns才发包
-		//这里修改成1ms更好一些吧
-		qp->npa.m_lastPollingTime = Simulator::Now().GetTimeStep();
+// 	uint64_t interval = Simulator::Now().GetTimeStep() - qp->npa.m_lastPollingTime;
+// 	if(interval > 1000000){//它最小间隔300000ns才发包
+// 		//这里修改成1ms更好一些吧
+// 		qp->npa.m_lastPollingTime = Simulator::Now().GetTimeStep();
 
-		Ptr<Packet> p = Create<Packet>(0);
-		CustomHeader pollingHdr(CustomHeader::L4_Header);
-		pollingHdr.l3Prot = 0xFA;
-		pollingHdr.polling.seq = seq;
-		pollingHdr.polling.eventID = Simulator::Now().GetTimeStep() - 1000000000;
-		pollingHdr.polling.sport = qp->sport;
-		pollingHdr.polling.dport = qp->dport;
-		p->AddHeader(pollingHdr);
-		Ipv4Header head;
-		head.SetDestination(Ipv4Address(qp->dip));
-		head.SetSource(Ipv4Address(qp->sip));
-		head.SetProtocol(0xFA);
-		head.SetTtl(64);
-		head.SetPayloadSize(p->GetSize());
-		p->AddHeader(head);
-		PppHeader ppp;
-		ppp.SetProtocol(0x0021);//IPv4
-		p->AddHeader(ppp);
+// 		Ptr<Packet> p = Create<Packet>(0);
+// 		CustomHeader pollingHdr(CustomHeader::L4_Header);
+// 		pollingHdr.l3Prot = 0xFA;
+// 		pollingHdr.polling.seq = seq;
+// 		pollingHdr.polling.eventID = Simulator::Now().GetTimeStep() - 1000000000;
+// 		pollingHdr.polling.sport = qp->sport;
+// 		pollingHdr.polling.dport = qp->dport;
+// 		p->AddHeader(pollingHdr);
+// 		Ipv4Header head;
+// 		head.SetDestination(Ipv4Address(qp->dip));
+// 		head.SetSource(Ipv4Address(qp->sip));
+// 		head.SetProtocol(0xFA);
+// 		head.SetTtl(64);
+// 		head.SetPayloadSize(p->GetSize());
+// 		p->AddHeader(head);
+// 		PppHeader ppp;
+// 		ppp.SetProtocol(0x0021);//IPv4
+// 		p->AddHeader(ppp);
 
-		dev->RdmaEnqueueHighPrioQ(p);
-		dev->TriggerTransmit();
-	}
-}
+// 		dev->RdmaEnqueueHighPrioQ(p);
+// 		dev->TriggerTransmit();
+// 	}
+// }
 
 Ptr<Packet> RdmaHw::GetNxtPacket(Ptr<RdmaQueuePair> qp){
 	uint32_t payload_size = qp->GetBytesLeft();
@@ -754,9 +790,9 @@ Ptr<Packet> RdmaHw::GetNxtPacket(Ptr<RdmaQueuePair> qp){
 	qp->m_ipid++;
 
 	// RDMA NPA
-	if(m_agent_flag){
-		Simulator::Schedule(MicroSeconds(m_agent_threshold), &ScheduleAckClock, qp->snd_nxt, qp, m_nic[GetNicIdxOfQp(qp)].dev);
-	}
+	// if(m_agent_flag){
+	// 	Simulator::Schedule(MicroSeconds(m_agent_threshold), &ScheduleAckClock, qp->snd_nxt, qp, m_nic[GetNicIdxOfQp(qp)].dev);
+	// }
 
 	// return
 	return p;

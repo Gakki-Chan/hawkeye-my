@@ -68,6 +68,7 @@ RdmaQueuePair::RdmaQueuePair(uint16_t pg, Ipv4Address _sip, Ipv4Address _dip, ui
 	hpccPint.m_incStage = 0;
 
 	npa.m_lastPollingTime = 0;
+	npa.m_maxRtt = 0;
 }
 
 void RdmaQueuePair::SetSize(uint64_t size){

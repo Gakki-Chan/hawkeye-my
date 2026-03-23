@@ -46,9 +46,9 @@
 #include "ns3/seq-ts-header.h"
 #include "ns3/pointer.h"
 #include "ns3/custom-header.h"
-
+#include "ns3/log.h"
 #include <iostream>
-
+#include "switch-node.h"
 NS_LOG_COMPONENT_DEFINE("QbbNetDevice");
 
 namespace ns3 {
@@ -91,7 +91,7 @@ namespace ns3 {
 		return 0;
 	}
 	int RdmaEgressQueue::GetNextQindex(bool paused[]){
-		bool found = false;
+		// bool found = false;
 		uint32_t qIndex;
 		if (!paused[ack_q_idx] && m_ackQ->GetNPackets() > 0)
 			return -1;
@@ -375,6 +375,12 @@ namespace ns3 {
 			if (ch.pfc.time > 0){
 				m_tracePfc(1);
 				m_paused[qIndex] = true;
+				if(m_node->GetNodeType() > 0){
+					Ptr<SwitchNode> sw = DynamicCast<SwitchNode>(m_node);
+					if(sw != nullptr){
+						sw->NotifyPfcEvent(m_ifIndex,qIndex,true);
+					}
+				}
 			}else{
 				m_tracePfc(0);
 				Resume(qIndex);
@@ -443,10 +449,18 @@ namespace ns3 {
 		ch.signal.eventID = eventID;
 		ch.signal.congestionPort = congestionPort;
 		uint16_t temp;
+
 		ProcessHeader(p, temp);
 		p->RemoveHeader(ipv4h);
 		p->AddHeader(ch);
-		SwitchSend(0, p, ch);
+		if(m_node->GetNodeType() == 0){
+			RdmaEnqueueHighPrioQ(p);
+			TriggerTransmit();
+		}else{
+			SwitchSend(0, p, ch);
+		}//解决analysis等host发包的问题
+		
+		// NS_LOG_UNCOND("dev sent sig");
 	}
 		void QbbNetDevice::SendAnalysis(uint32_t eventID,Ipv4Address dst_addr,uint32_t congestionPort){
 		Ptr<Packet> p = Create<Packet>(0);
@@ -469,9 +483,12 @@ namespace ns3 {
 		ProcessHeader(p, temp);
 		p->RemoveHeader(ipv4h);
 		p->AddHeader(ch);
-		
-		SwitchSend(0, p, ch);
-		
+		if(m_node->GetNodeType() == 0){
+			RdmaEnqueueHighPrioQ(p);
+			TriggerTransmit();
+		}else{
+			SwitchSend(0, p, ch);
+		}//以后可能会让host发给analysis
 	}
 
 	bool

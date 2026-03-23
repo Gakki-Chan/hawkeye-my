@@ -12,6 +12,7 @@
 #include "ns3/int-header.h"
 #include <cmath>
 #include <sys/file.h>
+#include "ns3/log.h"
 namespace ns3 {
 
 TypeId SwitchNode::GetTypeId (void)
@@ -47,6 +48,7 @@ SwitchNode::SwitchNode(){
 	m_ecmpSeed = m_id;
 	m_node_type = 1;
 	m_mmu = CreateObject<SwitchMmu>();
+	m_lastSignalEpoch = 0;
 	for (uint32_t i = 0; i < pCnt; i++)
 		for (uint32_t j = 0; j < pCnt; j++)
 			for (uint32_t k = 0; k < qCnt; k++)
@@ -62,29 +64,38 @@ SwitchNode::SwitchNode(){
 	for (uint32_t i = 0; i < pCnt; i++)
 		for (uint32_t j = 0; j < epochNum; j++)
 			for (uint32_t k = 0; k < flowEntryNum; k++)
-				m_flowTelemetryData[i][j][k].flowTuple = FiveTuple{0,0,0,0,0};
+				m_flowTelemetryData[i][j][k] = FlowTelemetryData();
 	for (uint32_t j = 0; j < epochNum; j++)
-		for (uint32_t k = 0; k < pCnt; k++){
-				m_portTelemetryData[j][k].enqQdepth = 0;
-				m_portTelemetryData[j][k].pfcPausedPacketNum = 0;
-				m_portTelemetryData[j][k].lastTimeStep = 0;
-				m_portTelemetryData[j][k].packetNum = 0;
-			}
+		for (uint32_t k = 0; k < pCnt; k++)
+			m_portTelemetryData[j][k] = PortTelemetryData();
 	for (uint32_t i = 0; i < pCnt; i++)
 		for (uint32_t j = 0; j < pCnt; j++){
 			m_portToPortBytes[i][j] = 0;
 			for(uint32_t k = 0; k < portToPortSlot; k++)
 				m_portToPortBytesSlot[i][j][k] = 0;
 		}
-	for (uint32_t i = 0; i < pCnt; i++)
+	for (uint32_t i = 0; i < pCnt; i++) {
 		m_lastPollingEpoch[i] = 0;
-	m_slotIdx = 0;
-	for (uint32_t i = 0; i < pCnt; i++)
 		m_lastEventID[i] = 0;
+		m_portExportEnqQdepth[i] = 0;
+		m_portExportPfcPausedPacketNum[i] = 0;
+		m_portExportPacketNum[i] = 0;
+		m_portSawPfcSinceLastSignal[i] = 0;
+	}
+	m_slotIdx = 0;
 	m_nodeWeight.resize(50);
 	for(uint32_t i=0; i < 50; i++)
 		m_nodeWeight[i] = 0;
+	for (uint32_t i = 0; i < flowEntryNum; i++)
+		m_flowWeight[i] = 0;
+
 }
+void SwitchNode::NotifyPfcEvent(uint32_t ifIndex, uint32_t qIndex, bool isPause) {
+    if (isPause) {
+        m_portSawPfcSinceLastSignal[ifIndex]++;
+    }
+}
+
 std::string uint32_to_ipv4(uint32_t ip){
     	// 分解四个字节
     	uint8_t b1 = (ip >> 24) & 0xFF;
@@ -142,6 +153,8 @@ void SwitchNode::CheckAndSendResume(uint32_t inDev, uint32_t qIndex){
 	}
 }
 void SwitchNode::WriteFlowEntry(uint32_t idx,uint32_t epoch,uint32_t flowid){
+	if(fp_flowdata == NULL)
+		return;
 	if(m_flowTelemetryData[idx][epoch][flowid].flowTuple.srcIp == 0)
 		return;
 	m_flowTelemetryData[idx][epoch][flowid].durationSeconds = Simulator::Now().GetSeconds() - m_flowTelemetryData[idx][epoch][flowid].startTimeSeconds;
@@ -170,6 +183,8 @@ void SwitchNode::WriteFlowEntry(uint32_t idx,uint32_t epoch,uint32_t flowid){
 }//add 添加写flowdata函数
 
 void SwitchNode::OutputTelemetry(uint32_t port, uint32_t inport, bool isSignal){
+	if(fp_telemetry == NULL)
+		return;
 	int fd_out = fileno(fp_telemetry);
 	flock(fd_out, LOCK_EX);
 	int epoch = GetEpochIdx();
@@ -183,8 +198,10 @@ void SwitchNode::OutputTelemetry(uint32_t port, uint32_t inport, bool isSignal){
 		fprintf(fp_telemetry,"\n\nsignal\nport telemetry data for port %d\n", port);
 		// fprintf(fp_telemetry, "enqQdepth pfcPausedPacketNum packetNum\n");
 		fprintf(fp_telemetry, "enqQdepth pfcPausedPacketNum\n");
-		fprintf(fp_telemetry, "%d ", m_portTelemetryData[epoch][port].enqQdepth);
-		fprintf(fp_telemetry, "%d ", m_portTelemetryData[epoch][port].pfcPausedPacketNum);
+		// fprintf(fp_telemetry, "%d ", m_portTelemetryData[epoch][port].enqQdepth);
+		fprintf(fp_telemetry, "%llu ", (unsigned long long)m_portExportEnqQdepth[port]);
+		// fprintf(fp_telemetry, "%d ", m_portTelemetryData[epoch][port].pfcPausedPacketNum);
+		fprintf(fp_telemetry, "%d ", m_portExportPfcPausedPacketNum[port]);
 		// fprintf(fp_telemetry, "%d\n\n", m_portTelemetryData[epoch][port].packetNum);//保留packetNum
 		fprintf(fp_telemetry,"\n\nsignal\nflow telemetry data for port %d\n", port);
 	}	
@@ -195,8 +212,31 @@ void SwitchNode::OutputTelemetry(uint32_t port, uint32_t inport, bool isSignal){
 		
 	// fprintf(fp_telemetry, "flowIdx srcIp dstIp srcPort dstPort protocol minSeq maxSeq packetNum enqQdepth pfcPausedPacketNum\n");
 	fprintf(fp_telemetry, "flowIdx srcIp dstIp srcPort dstPort protocol packetFwdNum totalFwdBytes enqQdepth pfcPausedPacketNum\n");
+	auto hasFlowExportTelemetry = [](const FlowTelemetryData &entry) {
+		return entry.flowTuple.srcIp != 0
+			&& (entry.exportPacketNum > 0
+				|| entry.exportEnqQdepth > 0
+				|| entry.exportPfcPausedPacketNum > 0);
+	};
+	auto printFlowTelemetry = [&](uint32_t flowIdx,
+		const FiveTuple &flowTuple,
+		uint32_t packetFwdNum,
+		uint32_t totalFwdBytes,
+		uint32_t exportEnqQdepth,
+		uint32_t exportPfcPausedPacketNum) {
+		fprintf(fp_telemetry, "%u ", flowIdx);
+		fprintf(fp_telemetry, "%08x ", flowTuple.srcIp);
+		fprintf(fp_telemetry, "%08x ", flowTuple.dstIp);
+		fprintf(fp_telemetry, "%u ", flowTuple.srcPort);
+		fprintf(fp_telemetry, "%u ", flowTuple.dstPort);
+		fprintf(fp_telemetry, "%u ", flowTuple.protocol);
+		fprintf(fp_telemetry, "%u ", packetFwdNum);
+		fprintf(fp_telemetry, "%u ", totalFwdBytes);
+		fprintf(fp_telemetry, "%u ", exportEnqQdepth);
+		fprintf(fp_telemetry, "%u\n", exportPfcPausedPacketNum);
+	};
 				
-	for(int i = 0; i < flowEntryNum; i++){
+	if (false) for(int i = 0; i < flowEntryNum; i++){
 		if(m_flowTelemetryData[port][epoch][i].flowTuple.srcIp != 0 && Simulator::Now().GetTimeStep() - m_flowTelemetryData[port][epoch][i].lastTimeStep <= epochTime * (epochNum - 1)){
 			fprintf(fp_telemetry, "%d ", i);
 			fprintf(fp_telemetry, "%08x ", m_flowTelemetryData[port][epoch][i].flowTuple.srcIp);
@@ -209,14 +249,58 @@ void SwitchNode::OutputTelemetry(uint32_t port, uint32_t inport, bool isSignal){
 			fprintf(fp_telemetry, "%d ", m_flowTelemetryData[port][epoch][i].packetFwdNum);//add
 			fprintf(fp_telemetry, "%d ", m_flowTelemetryData[port][epoch][i].totalFwdBytes);//add
 			// fprintf(fp_telemetry, "%d ", m_flowTelemetryData[port][epoch][i].packetNum);
-			fprintf(fp_telemetry, "%d ", m_flowTelemetryData[port][epoch][i].enqQdepth);
-			fprintf(fp_telemetry, "%d\n", m_flowTelemetryData[port][epoch][i].pfcPausedPacketNum);
+			// fprintf(fp_telemetry, "%d ", m_flowTelemetryData[port][epoch][i].enqQdepth);
+			fprintf(fp_telemetry, "%d ",m_flowTelemetryData[port][epoch][i].exportEnqQdepth );
+			fprintf(fp_telemetry, "%d\n", m_flowTelemetryData[port][epoch][i].exportPfcPausedPacketNum);
+			// fprintf(fp_telemetry, "%d\n", m_flowTelemetryData[port][epoch][i].pfcPausedPacketNum);
 			m_flowTelemetryData[port][epoch][i].flowWeight = m_flowWeight[i];
 			uint32_t tmpnid = (m_flowTelemetryData[port][epoch][i].flowTuple.srcIp >> 8) & 0xffff;
 			m_flowTelemetryData[port][epoch][i].nodeWeight = m_nodeWeight[tmpnid];
 			WriteFlowEntry(port,epoch,i);
 		}
 		
+	}
+	for(int i = 0; i < flowEntryNum; i++){
+		int exportEpoch[epochNum];
+		uint32_t exportEpochCount = 0;
+		for (uint32_t e = 0; e < epochNum; e++){
+			uint32_t entryEpoch = (epoch + epochNum - e) % epochNum;
+			if (hasFlowExportTelemetry(m_flowTelemetryData[port][entryEpoch][i]))
+				exportEpoch[exportEpochCount++] = entryEpoch;
+		}
+		if (exportEpochCount == 0)
+			continue;
+
+		auto &firstEntry = m_flowTelemetryData[port][exportEpoch[0]][i];
+		FiveTuple currentTuple = firstEntry.flowTuple;
+		uint32_t packetFwdNum = 0;
+		uint32_t totalFwdBytes = 0;
+		uint32_t exportEnqQdepth = 0;
+		uint32_t exportPfcPausedPacketNum = 0;
+
+		for (uint32_t e = 0; e < exportEpochCount; e++){
+			auto &entry = m_flowTelemetryData[port][exportEpoch[e]][i];
+			if (!(entry.flowTuple == currentTuple)){
+				printFlowTelemetry(i, currentTuple, packetFwdNum, totalFwdBytes, exportEnqQdepth, exportPfcPausedPacketNum);
+				currentTuple = entry.flowTuple;
+				packetFwdNum = 0;
+				totalFwdBytes = 0;
+				exportEnqQdepth = 0;
+				exportPfcPausedPacketNum = 0;
+			}
+			packetFwdNum += entry.packetFwdNum;
+			totalFwdBytes += entry.totalFwdBytes;
+			exportEnqQdepth += entry.exportEnqQdepth;
+			exportPfcPausedPacketNum += entry.exportPfcPausedPacketNum;
+			entry.flowWeight = m_flowWeight[i];
+			uint32_t tmpnid = (entry.flowTuple.srcIp >> 8) & 0xffff;
+			if (tmpnid < m_nodeWeight.size())
+				entry.nodeWeight = m_nodeWeight[tmpnid];
+			else
+				entry.nodeWeight = 0;
+			WriteFlowEntry(port, exportEpoch[e], i);
+		}
+		printFlowTelemetry(i, currentTuple, packetFwdNum, totalFwdBytes, exportEnqQdepth, exportPfcPausedPacketNum);
 	}
 	fprintf(fp_telemetry, "0 0 0 0 0 0 0 0 0 0\n");
 
@@ -246,11 +330,44 @@ void SwitchNode::OutputTelemetry(uint32_t port, uint32_t inport, bool isSignal){
 	// 		fprintf(fp_telemetry, "%d\n", m_flowTelemetryData[port][epoch][i].pfcPausedPacketNum);
 	// 	}
 	// }
+	ClearFlowExportTelemetry(port);
+	ClearPortExportTelemetry(port);
+
 	fprintf(fp_telemetry,"\n");
 	flock(fd_out, LOCK_UN);
 	fflush(fp_telemetry);
 }
+bool SwitchNode::ShouldTriggerSignal(uint32_t port){
+	if (m_portSawPfcSinceLastSignal[port] > 0 || m_portExportPfcPausedPacketNum[port] > 0)
+		return true;
+	Ptr<QbbNetDevice> device = DynamicCast<QbbNetDevice>(m_devices[port]);
+	if (device == nullptr)
+		return false;
+	for (uint32_t qIndex = 1; qIndex < qCnt; qIndex++){
+		if (device->GetEgressPaused(qIndex))
+			return true;
+	}
+	return false;
+}
+void SwitchNode::ClearPortExportTelemetry(uint32_t port){
+	m_portExportEnqQdepth[port] = 0;
+	m_portExportPfcPausedPacketNum[port] = 0;
+	m_portExportPacketNum[port] = 0;
 
+}
+void SwitchNode::ClearPfcEvent(uint32_t ifIndex) {
+    m_portSawPfcSinceLastSignal[ifIndex] = 0;
+}
+
+void SwitchNode::ClearFlowExportTelemetry(uint32_t port){
+	for(uint32_t epoch = 0; epoch < epochNum; epoch++){
+		for(uint32_t i=0;i<flowEntryNum;i++){
+			m_flowTelemetryData[port][epoch][i].exportEnqQdepth=0;
+			m_flowTelemetryData[port][epoch][i].exportPfcPausedPacketNum=0;
+			m_flowTelemetryData[port][epoch][i].exportPacketNum=0;
+		}
+	}
+}
 int SwitchNode::GetOutDevToAnalysis(){
 	auto entry = m_rtTable.find(m_analysis_addr.Get());
 	
@@ -268,7 +385,8 @@ void SwitchNode::SendSignalToAnalysis(uint32_t event_id){
 	device->SendAnalysis(event_id, m_analysis_addr);
 }//add 发送给分析服务器
 void SwitchNode::UpdateFlowWeight(){//读取文件中的flowid src_ip, flow_weight来更新权重
-	FILE* fin = fopen("mix/find-root-cal.txt","r");
+	FILE* fin = fopen("mix/find_root_cal.txt","r");
+	if(fin == NULL) return;
 	if(flock(fileno(fin),LOCK_SH|LOCK_NB)== -1){
 		perror("flock");
 	}
@@ -280,15 +398,20 @@ void SwitchNode::UpdateFlowWeight(){//读取文件中的flowid src_ip, flow_weig
 	fscanf(fin, "%lu\n", &ftime);
 	if(ftime != m_lastUpdateWeight){
 		m_lastUpdateWeight = ftime;
+		for (uint32_t i = 0; i < flowEntryNum; i++)
+			m_flowWeight[i] = 0;
+		for (uint32_t i = 0; i < m_nodeWeight.size(); i++)
+			m_nodeWeight[i] = 0;
 		while(fscanf(fin,"%u %u %u\n",&flow_id, &src_ip, &flow_weight) != EOF){
+			if(flow_id >= flowEntryNum)
+				continue;
 			m_flowWeight[flow_id] = flow_weight;
 			src_id = (src_ip >> 8) & 0xffff;
-			temp_node_weight[src_id] += flow_weight;
+			if(src_id < 50)
+				temp_node_weight[src_id] += flow_weight;
 		}
 		for(uint32_t i=0; i < 50; i++){
-			if(temp_node_weight[i] != 0){
-				m_nodeWeight[i] = temp_node_weight[i];
-			}
+			m_nodeWeight[i] = temp_node_weight[i];
 		}
 	}
 	flock(fileno(fin), LOCK_UN);
@@ -298,7 +421,9 @@ void SwitchNode::UpdateFlowWeight(){//读取文件中的flowid src_ip, flow_weig
 void SwitchNode::SendToDev(Ptr<Packet>p, CustomHeader &ch){
 	//RDMA NPA : signal packet parse
 	if (ch.l3Prot == 0xFB){
+		// NS_LOG_UNCOND("Normal signal receive");
 		if(ch.signal.congestionPort != 0){
+			// NS_LOG_UNCOND("host send sig");
 			UpdateFlowWeight();
 			return;
 		}
@@ -308,16 +433,34 @@ void SwitchNode::SendToDev(Ptr<Packet>p, CustomHeader &ch){
 		uint32_t event_id = ch.signal.eventID;
 		for (uint32_t idx = 0; idx < pCnt; idx++){
 			if(m_portToPortBytes[inDev][idx] > 0){
+				bool shouldTrigger = ShouldTriggerSignal(idx);
 				OutputTelemetry(idx, inDev, true);
-				if(m_portTelemetryData[GetEpochIdx()][idx].pfcPausedPacketNum > 0 || m_portTelemetryData[(GetEpochIdx() + 1) % epochNum][idx].pfcPausedPacketNum > 0 || DynamicCast<QbbNetDevice>(m_devices[idx])->GetEgressPaused(3)){
+				NS_LOG_UNCOND("0xFB branch enter");
+NS_LOG_UNCOND("node=" << GetId()
+    << " l3=0xFB"
+    << " inDev=" << inDev
+    << " idx=" << idx
+    << " should=" << shouldTrigger
+    << " exportPfc=" << m_portExportPfcPausedPacketNum[idx]
+    << " paused3=" << DynamicCast<QbbNetDevice>(m_devices[idx])->GetEgressPaused(3)
+    << " lastEvent=" << m_lastEventID[idx]
+    << " event=" << event_id);
+
+
+				if(shouldTrigger){
+					
 					if(event_id > m_lastEventID[idx] + 500000 || m_lastEventID[idx] == 0){
 						m_lastEventID[idx] = event_id;
 					}else{
 						continue;
 					}
+					NS_LOG_UNCOND("signal fasong ---oxFB");
+
 					DynamicCast<QbbNetDevice>(m_devices[idx])-> SendSignal(event_id);
 				}
+				// NS_LOG_UNCOND("signal fasong analy");
 				SendSignalToAnalysis(event_id);
+				ClearPfcEvent(idx);
 			}
 		}
 		return;	
@@ -328,15 +471,34 @@ void SwitchNode::SendToDev(Ptr<Packet>p, CustomHeader &ch){
 		p->PeekPacketTag(t);
 		uint32_t inDev = t.GetFlowId();
 		int idx = GetOutDev(p, ch);
+		UpdateFlowWeight();
 		uint32_t event_id = ch.polling.eventID;
-		if(m_portTelemetryData[GetEpochIdx()][idx].pfcPausedPacketNum > 0 || m_portTelemetryData[(GetEpochIdx() + 1) % epochNum][idx].pfcPausedPacketNum > 0 || DynamicCast<QbbNetDevice>(m_devices[idx])->GetEgressPaused(3)){
+		bool inShouldTrigger = ShouldTriggerSignal(inDev);
+		bool outShouldTrigger = ShouldTriggerSignal(idx);
+		NS_LOG_UNCOND("0xFA branch enter");
+NS_LOG_UNCOND("node=" << GetId()
+    << " l3=0xFA"
+    << " inDev=" << inDev
+    << " idx=" << idx
+    << " should=" << outShouldTrigger
+    << " exportPfc=" << m_portExportPfcPausedPacketNum[idx]
+    << " paused3=" << DynamicCast<QbbNetDevice>(m_devices[idx])->GetEgressPaused(3)
+    << " lastEvent=" << m_lastEventID[idx]
+    << " event=" << event_id);
+
+
+		if(inShouldTrigger || outShouldTrigger){
 			if(event_id > m_lastEventID[idx] + 500000 || m_lastEventID[idx] == 0){
 				m_lastEventID[idx] = event_id;
+
+				NS_LOG_UNCOND("signal fasong -----oxFA");
 				DynamicCast<QbbNetDevice>(m_devices[idx])-> SendSignal(event_id);
 			}
 		}
 		OutputTelemetry(idx, inDev, false);
+		// NS_LOG_UNCOND("signal fasong analy");
 		SendSignalToAnalysis(event_id);
+		ClearPfcEvent(idx);
 	}
 
 	int idx = GetOutDev(p, ch);
@@ -408,6 +570,9 @@ void SwitchNode::SendToDev(Ptr<Packet>p, CustomHeader &ch){
 			// 	.dstPort = ch.l3Prot == 0x06 ? ch.tcp.dport : ch.udp.dport,
 			// 	.protocol = (uint8_t)ch.l3Prot
 			// };
+			bool paused = DynamicCast<QbbNetDevice>(m_devices[idx])->GetEgressPaused(qIndex);
+			uint32_t qdepth = m_mmu->ingress_queue_length[inDev][qIndex] - 1;
+
 			uint32_t epochIdx = GetEpochIdx();
 			uint32_t flowIdx = FiveTupleHash(fiveTuple);
 			auto &entry = m_flowTelemetryData[origin_flow_idx][epochIdx][flowIdx];//ack映射为一个flow add
@@ -436,18 +601,27 @@ void SwitchNode::SendToDev(Ptr<Packet>p, CustomHeader &ch){
 				entry.packetNum++; //总包数，留着
 				entry.enqQdepth += m_mmu->ingress_queue_length[inDev][qIndex] - 1;
 				entry.flowWeight = m_flowWeight[flowIdx];
-				entry.nodeWeight = m_nodeWeight[(fiveTuple.srcIp >> 8) & 0xffff];
-				if(DynamicCast<QbbNetDevice>(m_devices[idx])->GetEgressPaused(qIndex)){
-					m_flowTelemetryData[idx][epochIdx][flowIdx].pfcPausedPacketNum++;
+				entry.nodeWeight = ((fiveTuple.srcIp >> 8) & 0xffff) < m_nodeWeight.size() ? m_nodeWeight[(fiveTuple.srcIp >> 8) & 0xffff] : 0;
+				if(paused){
+					entry.pfcPausedPacketNum++;
 				 }//else{
 				// 	entry.enqQdepth += m_mmu->egress_queue_length[idx][qIndex] - 1;
 				// }
+				entry.exportEnqQdepth += qdepth;
+				entry.exportPacketNum++;
+				if(paused){
+					entry.exportPfcPausedPacketNum++;
+				 }
 				entry.lastTimeStep = Simulator::Now().GetTimeStep();
 			} else{
 				entry.flowWeight = m_flowWeight[flowIdx];
-				entry.nodeWeight = m_nodeWeight[(fiveTuple.srcIp >> 8) & 0xffff];
+				entry.nodeWeight = ((fiveTuple.srcIp >> 8) & 0xffff) < m_nodeWeight.size() ? m_nodeWeight[(fiveTuple.srcIp >> 8) & 0xffff] : 0;
 				entry.endTimeSeconds = Simulator::Now().GetSeconds();
 				WriteFlowEntry(origin_flow_idx,epochIdx,flowIdx);//记录流表条目
+				entry.exportEnqQdepth = 0;
+				entry.exportPfcPausedPacketNum = 0;
+				entry.exportPacketNum = 0;
+
 				entry.flowTuple = fiveTuple;
 				entry.minSeq = entry.maxSeq = ch.l3Prot == 0x06 ? ch.tcp.seq : ch.udp.seq;
 				entry.ackCount = entry.nackCount = 0;
@@ -464,18 +638,29 @@ void SwitchNode::SendToDev(Ptr<Packet>p, CustomHeader &ch){
 					entry.packetFwdNum = 1;
 					entry.totalFwdBytes = p->GetSize();
 				}
-				entry.enqQdepth = m_mmu->ingress_queue_length[inDev][qIndex] - 1;
+				entry.enqQdepth = qdepth;
 				entry.pfcPausedPacketNum = 0;
-				if(DynamicCast<QbbNetDevice>(m_devices[idx])->GetEgressPaused(qIndex)){ // if is pause
-					m_flowTelemetryData[idx][epochIdx][flowIdx].pfcPausedPacketNum++;
+				if(paused){ // if is pause
+					entry.pfcPausedPacketNum++;
+				}
+				entry.exportEnqQdepth += qdepth;
+				entry.exportPacketNum++;
+				if (paused) {
+    				entry.exportPfcPausedPacketNum++;
 				}
 				entry.packetNum = 1;
 				entry.lastTimeStep = Simulator::Now().GetTimeStep();
 				entry.flowWeight = m_flowWeight[flowIdx];
-				entry.nodeWeight = m_nodeWeight[(fiveTuple.srcIp >> 8) & 0xffff];
+				entry.nodeWeight = ((fiveTuple.srcIp >> 8) & 0xffff) < m_nodeWeight.size() ? m_nodeWeight[(fiveTuple.srcIp >> 8) & 0xffff] : 0;
 				entry.startTimeSeconds = Simulator::Now().GetSeconds();
 				entry.endTimeSeconds = 0;
 			}
+			m_portExportEnqQdepth[idx] += qdepth;
+			m_portExportPacketNum[idx]++;
+		if (paused) {
+    			m_portExportPfcPausedPacketNum[idx]++;
+			}
+
 
 			auto &portEntry = m_portTelemetryData[epochIdx][idx];
 			bool newPortEntry = Simulator::Now().GetTimeStep() - portEntry.lastTimeStep > epochTime * (epochNum - 1);
@@ -490,6 +675,9 @@ void SwitchNode::SendToDev(Ptr<Packet>p, CustomHeader &ch){
 				portEntry.enqQdepth = m_mmu->ingress_queue_length[inDev][qIndex] - 1;
 				portEntry.pfcPausedPacketNum = 0;
 				portEntry.packetNum = 1;
+				if (paused) {
+    				portEntry.pfcPausedPacketNum++;
+				}
 				portEntry.lastTimeStep = Simulator::Now().GetTimeStep();
 			}
 		}

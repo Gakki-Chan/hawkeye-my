@@ -82,6 +82,7 @@ public:
 	}hpccPint;
 	struct{
 		uint64_t m_lastPollingTime;
+		uint64_t m_maxRtt;
 	}npa;
 
 	/***********

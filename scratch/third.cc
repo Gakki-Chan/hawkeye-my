@@ -148,7 +148,7 @@ void ScheduleFlowInputs(){
 	while (flow_input.idx < flow_num && Seconds(flow_input.start_time) == Simulator::Now()){
 		uint32_t port = portNumder[flow_input.src][flow_input.dst]++; // get a new port number
 		RdmaClientHelper clientHelper(flow_input.pg, serverAddress[flow_input.src], serverAddress[flow_input.dst], port, flow_input.dport, flow_input.maxPacketCount, has_win?(global_t==1?maxBdp:pairBdp[n.Get(flow_input.src)][n.Get(flow_input.dst)]):0, global_t==1?maxRtt:pairRtt[flow_input.src][flow_input.dst]);
-		clientHelper.SetAttribute("DataRate", StringValue("10Gbps"));
+		clientHelper.SetAttribute("DataRate", StringValue("40Gbps"));
 		ApplicationContainer appCon = clientHelper.Install(n.Get(flow_input.src));
 		appCon.Start(Seconds(flow_input.start_time));//使用flow_input.start_time替换Time(0),可读性更好
 		if(flow_input.stop_time>flow_input.start_time){
@@ -188,7 +188,7 @@ void ScheduleAttackerInputs(){
 		double curr_stop=attacker_start_time+attacker_duration;
 		while(curr_start<simulator_stop_time-0.001){
 			uint32_t port=portNumder[*node][attacker_dst]++;
-			RdmaClientHelper clientHelper(3,serverAddress[*node],serverAddress[attacker_dst],port,100,1000000,has_win?(global_t==1?maxBdp:pairBdp[n.Get(*node)][n.Get(attacker_dst)]):0, global_t==1?maxRtt:pairRtt[*node][attacker_dst]);
+			RdmaClientHelper clientHelper(3,serverAddress[*node],serverAddress[attacker_dst],port,100,20000000,has_win?(global_t==1?maxBdp:pairBdp[n.Get(*node)][n.Get(attacker_dst)]):0, global_t==1?maxRtt:pairRtt[*node][attacker_dst]);
 			ApplicationContainer appCon=clientHelper.Install(n.Get(*node));
 			appCon.Start(Seconds(curr_start));
 			if(curr_stop<simulator_stop_time-0.001){
@@ -992,8 +992,8 @@ int main(int argc, char *argv[])
 				sw->SetAttribute("AckHighPrio", UintegerValue(1));
 			else
 				sw->SetAttribute("AckHighPrio", UintegerValue(0));
-			if (epoch_time > 0)
-				sw->epochTime = epoch_time;
+			// if (epoch_time > 0)
+			// 	sw->epoch = epoch_time;
 			char flowdata_path[100];
 			sprintf(flowdata_path, "mix/teleflowdata_%d.txt", i);     
 			sw->fp_flowdata = fopen(flowdata_path, "w");

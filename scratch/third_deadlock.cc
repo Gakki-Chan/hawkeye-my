@@ -993,8 +993,8 @@ int main(int argc, char *argv[])
 				sw->SetAttribute("AckHighPrio", UintegerValue(1));
 			else
 				sw->SetAttribute("AckHighPrio", UintegerValue(0));
-			if (epoch_time > 0)
-				sw->epochTime = epoch_time;
+			// if (epoch_time > 0)
+			// 	sw->epoch = epoch_time;
 		}
 	}
 

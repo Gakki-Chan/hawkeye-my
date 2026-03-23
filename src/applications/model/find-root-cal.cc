@@ -10,7 +10,7 @@
 #include <sys/file.h>
 #include <algorithm>
 #include "ns3/simulator.h"
-
+#include "ns3/log.h"
 #include "find-root-cal.h"
 
 
@@ -304,9 +304,11 @@ void FindRootCal::ReadPolling(uint32_t node){
 	if(hasAddFlowToPort) canAdd=false;
 	ret = getline(&line, &len, fin);
 	while(true){
+		
 		ret = fscanf(fin, "%u %08x %08x %u %u %u %u %u %u %u\n", &flowIdx, &srcIp, &dstIp, &sport, &dport, &proto, &packetNum, &bytes, &enqQdepth, &pfcPausedPacketNum);
 		if(dstIp == 0) break;
 		if(pfcPausedPacketNum > 0){
+			NS_LOG_UNCOND("pfcPausedPacketNum > 0");
 			if(canAdd){
 				uint32_t dstnode = (dstIp >> 8) & 0xffff;
 				int nextnode = GetNextHop(node, dstnode);

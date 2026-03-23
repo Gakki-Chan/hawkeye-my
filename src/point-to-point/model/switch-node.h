@@ -10,7 +10,7 @@
 namespace ns3 {
 
 class Packet;
-
+std::string uint32_to_ipv4(uint32_t ip);
 class SwitchNode : public Node{
 	static const uint32_t pCnt = 257;	// Number of ports used
 	static const uint32_t qCnt = 8;	// Number of queues/priorities used
@@ -27,6 +27,7 @@ class SwitchNode : public Node{
 	double m_u[pCnt];
 
 	// RDMA NPA
+	static const uint32_t rateThreshold = 1024 * 1024 * 1024 / 1000 / 8;
 	static const uint32_t flowHashSeed = 0x233;	// Seed for flow hash
 	static const uint32_t flowEntryNum = (1 << 12);	// Number of flowTelemetryData entries
 	static const uint32_t epochNum = 2;	//
@@ -56,6 +57,10 @@ class SwitchNode : public Node{
 		uint32_t packetNum;		// 32-bit packet_num
 		uint32_t enqQdepth;		// 32-bit enq_q_depth
 		uint32_t pfcPausedPacketNum;	// 32-bit pfc_paused_packet_num
+		uint32_t exportEnqQdepth;
+	uint32_t exportPfcPausedPacketNum;
+	uint32_t exportPacketNum;
+
 		uint32_t totalFwdBytes, totalBwdBytes; 
 		uint32_t ackCount, nackCount;
 		int flowWeight, nodeWeight;//add 
@@ -81,6 +86,9 @@ class SwitchNode : public Node{
 	PortTelemetryData m_portTelemetryData[epochNum][pCnt]; // port telemetry data
 	uint32_t m_portToPortBytes[pCnt][pCnt]; // bytes from port to port
 	uint32_t m_portToPortBytesSlot[pCnt][pCnt][portToPortSlot]; // port to port bytes slot
+	uint64_t m_portExportEnqQdepth[pCnt];
+	uint32_t m_portExportPfcPausedPacketNum[pCnt];
+	uint32_t m_portExportPacketNum[pCnt];
 
 protected:
 	bool m_ecnEnabled;
@@ -99,12 +107,20 @@ private:
 	static uint32_t FiveTupleHash(const FiveTuple &fiveTuple);
 	uint32_t GetEpochIdx();
 	void OutputTelemetry(uint32_t port, uint32_t inport, bool isSignal);
+	bool ShouldTriggerSignal(uint32_t port);
+	void ClearPortExportTelemetry(uint32_t port);
+	void ClearFlowExportTelemetry(uint32_t port);
 
 public:
+	void NotifyPfcEvent(uint32_t ifIndex, uint32_t qIndex, bool isPause);
+	void ClearPfcEvent(uint32_t ifIndex);
+
+	uint32_t m_portSawPfcSinceLastSignal[pCnt];
 	Ptr<SwitchMmu> m_mmu;
 	int GetOutDevToAnalysis();
 	void SendSignalToAnalysis(uint32_t event_id);
 	static TypeId GetTypeId (void);
+	
 	SwitchNode();
 	void SetEcmpSeed(uint32_t seed);
 	void AddTableEntry(Ipv4Address &dstAddr, uint32_t intf_idx);
@@ -120,7 +136,7 @@ public:
 	// for RDMA NPA detect
 	FILE *fp_telemetry = NULL;
 	FILE *fp_flowdata = NULL;	
-	uint32_t epochTime = 500000;
+	uint32_t epochTime = 1000000;
 	Ipv4Address m_analysis_addr;
 };
 
