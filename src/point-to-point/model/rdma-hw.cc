@@ -598,13 +598,14 @@ int RdmaHw::Receive(Ptr<Packet> p, CustomHeader &ch){
 	}else if (ch.l3Prot == 0xFC){ // ACK
 		ReceiveAck(p, ch);
 	}else if(ch.l3Prot == 0xFB){
-		ReceiveSignal(p, ch);
+		if(m_analysis_flag)//除了分析服务器，其它主机没必要收到signal
+			ReceiveSignal(p, ch);
 	}
 	return 0;
 }
 int RdmaHw::ReceiveSignal(Ptr<Packet> p, CustomHeader &ch){//服务器或者主机才能收到
-	 NS_LOG_UNCOND("Node= "<<m_node->GetId()<<" Receive Signal");
-	 NS_LOG_UNCOND("Node Type "<<m_node->GetNodeType()<<"Receive Signal");
+	//  NS_LOG_UNCOND("Node= "<<m_node->GetId()<<" Receive Signal");
+	//  NS_LOG_UNCOND("Node Type "<<m_node->GetNodeType()<<"Receive Signal");
 	if(m_analysis_flag && ch.signal.congestionPort!= 0 ){//只有调用dev->sendanalysis的signal才有效，否则不做任何处理
 		// NS_LOG_UNCOND("analy rec");
 		uint32_t nodeid = ch.signal.congestionPort;
