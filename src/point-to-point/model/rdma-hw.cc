@@ -603,7 +603,8 @@ int RdmaHw::Receive(Ptr<Packet> p, CustomHeader &ch){
 	return 0;
 }
 int RdmaHw::ReceiveSignal(Ptr<Packet> p, CustomHeader &ch){//服务器或者主机才能收到
-
+	 NS_LOG_UNCOND("Node= "<<m_node->GetId()<<" Receive Signal");
+	 NS_LOG_UNCOND("Node Type "<<m_node->GetNodeType()<<"Receive Signal");
 	if(m_analysis_flag && ch.signal.congestionPort!= 0 ){//只有调用dev->sendanalysis的signal才有效，否则不做任何处理
 		// NS_LOG_UNCOND("analy rec");
 		uint32_t nodeid = ch.signal.congestionPort;
@@ -613,15 +614,16 @@ int RdmaHw::ReceiveSignal(Ptr<Packet> p, CustomHeader &ch){//服务器或者主�
 		}
 		analys_app->SetNextHop(nextHop);
 		analys_app->ReadOneFile(nodeid);
-	}
-	uint32_t size = m_node->GetNDevices();
+		uint32_t size = m_node->GetNDevices();
 	for(uint32_t i = 0; i < size; i++){
 		Ptr<NetDevice> netdev = m_node->GetDevice(i);
 		Ptr<QbbNetDevice> dev = DynamicCast<QbbNetDevice>(netdev);
 		if(dev == nullptr)
 			continue;
 		dev->SendSignal(ch.signal.eventID,m_node->GetId());
-	}//add 如果服务器收到signal,广播发送signal数据包
+	}
+	}
+	//add 如果服务器收到signal,广播发送signal数据包，问题：host也会发送这个包
 	return 0;
 }
 int RdmaHw::ReceiverCheckSeq(uint32_t seq, Ptr<RdmaRxQueuePair> q, uint32_t size){

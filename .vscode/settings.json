@@ -1,0 +1,18 @@
+{
+  "editor.quickSuggestions": {
+    "other": true,
+    "comments": false,
+    "strings": false
+  },
+  "editor.quickSuggestionsDelay": 0,
+  "editor.suggestOnTriggerCharacters": true,
+  "editor.parameterHints.enabled": true,
+  "files.associations": {
+    "*.cc": "cpp",
+    "*.h": "cpp"
+  },
+  "C_Cpp.default.configurationProvider": "ms-vscode.cpptools",
+  "C_Cpp.default.compileCommands": "${workspaceFolder}/compile_commands.json",
+  "C_Cpp.intelliSenseEngine": "default",
+  "C_Cpp.workspaceParsingPriority": "high"
+}

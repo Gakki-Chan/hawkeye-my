@@ -435,16 +435,16 @@ void SwitchNode::SendToDev(Ptr<Packet>p, CustomHeader &ch){
 			if(m_portToPortBytes[inDev][idx] > 0){
 				bool shouldTrigger = ShouldTriggerSignal(idx);
 				OutputTelemetry(idx, inDev, true);
-				NS_LOG_UNCOND("0xFB branch enter");
-NS_LOG_UNCOND("node=" << GetId()
-    << " l3=0xFB"
-    << " inDev=" << inDev
-    << " idx=" << idx
-    << " should=" << shouldTrigger
-    << " exportPfc=" << m_portExportPfcPausedPacketNum[idx]
-    << " paused3=" << DynamicCast<QbbNetDevice>(m_devices[idx])->GetEgressPaused(3)
-    << " lastEvent=" << m_lastEventID[idx]
-    << " event=" << event_id);
+				// NS_LOG_UNCOND("0xFB branch enter");
+				// NS_LOG_UNCOND("node=" << GetId()
+    			// 	<< " l3=0xFB"
+    			// 	<< " inDev=" << inDev
+    			// 	<< " idx=" << idx
+    			// 	<< " should=" << shouldTrigger
+    			// 	<< " exportPfc=" << m_portExportPfcPausedPacketNum[idx]
+    			// 	<< " paused3=" << DynamicCast<QbbNetDevice>(m_devices[idx])->GetEgressPaused(3)
+    			// 	<< " lastEvent=" << m_lastEventID[idx]
+    			// 	<< " event=" << event_id);
 
 
 				if(shouldTrigger){
@@ -454,7 +454,7 @@ NS_LOG_UNCOND("node=" << GetId()
 					}else{
 						continue;
 					}
-					NS_LOG_UNCOND("signal fasong ---oxFB");
+					// NS_LOG_UNCOND("signal fasong ---oxFB");
 
 					DynamicCast<QbbNetDevice>(m_devices[idx])-> SendSignal(event_id);
 				}
@@ -475,23 +475,23 @@ NS_LOG_UNCOND("node=" << GetId()
 		uint32_t event_id = ch.polling.eventID;
 		bool inShouldTrigger = ShouldTriggerSignal(inDev);
 		bool outShouldTrigger = ShouldTriggerSignal(idx);
-		NS_LOG_UNCOND("0xFA branch enter");
-NS_LOG_UNCOND("node=" << GetId()
-    << " l3=0xFA"
-    << " inDev=" << inDev
-    << " idx=" << idx
-    << " should=" << outShouldTrigger
-    << " exportPfc=" << m_portExportPfcPausedPacketNum[idx]
-    << " paused3=" << DynamicCast<QbbNetDevice>(m_devices[idx])->GetEgressPaused(3)
-    << " lastEvent=" << m_lastEventID[idx]
-    << " event=" << event_id);
+// 		NS_LOG_UNCOND("0xFA branch enter");
+// 		NS_LOG_UNCOND("node=" << GetId()
+//     		<< " l3=0xFA"
+//     		<< " inDev=" << inDev
+//     		<< " idx=" << idx
+//     		<< " should=" << outShouldTrigger
+//     		<< " exportPfc=" << m_portExportPfcPausedPacketNum[idx]
+//     		<< " paused3=" << DynamicCast<QbbNetDevice>(m_devices[idx])->GetEgressPaused(3)
+//     		<< " lastEvent=" << m_lastEventID[idx]
+//     		<< " event=" << event_id);
 
 
 		if(inShouldTrigger || outShouldTrigger){
 			if(event_id > m_lastEventID[idx] + 500000 || m_lastEventID[idx] == 0){
 				m_lastEventID[idx] = event_id;
 
-				NS_LOG_UNCOND("signal fasong -----oxFA");
+				// NS_LOG_UNCOND("signal fasong -----oxFA");
 				DynamicCast<QbbNetDevice>(m_devices[idx])-> SendSignal(event_id);
 			}
 		}

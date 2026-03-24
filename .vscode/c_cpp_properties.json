@@ -1,0 +1,39 @@
+{
+  "version": 4,
+  "configurations": [
+    {
+      "name": "Linux",
+      "compilerPath": "/usr/bin/g++",
+      "intelliSenseMode": "linux-gcc-x64",
+      "cppStandard": "gnu++11",
+      "cStandard": "gnu11",
+      "defines": [
+        "NS3_ASSERT_ENABLE",
+        "NS3_LOG_ENABLE",
+        "HAVE_PACKET_H=1",
+        "HAVE_IF_TUN_H=1"
+      ],
+      "includePath": [
+        "${workspaceFolder}",
+        "${workspaceFolder}/build",
+        "${workspaceFolder}/build/ns3",
+        "${workspaceFolder}/src/**",
+        "${workspaceFolder}/examples/**",
+        "${workspaceFolder}/scratch/**",
+        "${workspaceFolder}/utils"
+      ],
+      "browse": {
+        "path": [
+          "${workspaceFolder}",
+          "${workspaceFolder}/build",
+          "${workspaceFolder}/build/ns3",
+          "${workspaceFolder}/src",
+          "${workspaceFolder}/examples",
+          "${workspaceFolder}/scratch",
+          "${workspaceFolder}/utils"
+        ],
+        "limitSymbolsToIncludedHeaders": false
+      }
+    }
+  ]
+}

@@ -37,6 +37,7 @@
 #include <ns3/rdma-driver.h>
 #include <ns3/switch-node.h>
 #include <ns3/sim-setting.h>
+#include "ns3/log.h"
 
 using namespace ns3;
 using namespace std;
@@ -148,7 +149,7 @@ void ScheduleFlowInputs(){
 	while (flow_input.idx < flow_num && Seconds(flow_input.start_time) == Simulator::Now()){
 		uint32_t port = portNumder[flow_input.src][flow_input.dst]++; // get a new port number
 		RdmaClientHelper clientHelper(flow_input.pg, serverAddress[flow_input.src], serverAddress[flow_input.dst], port, flow_input.dport, flow_input.maxPacketCount, has_win?(global_t==1?maxBdp:pairBdp[n.Get(flow_input.src)][n.Get(flow_input.dst)]):0, global_t==1?maxRtt:pairRtt[flow_input.src][flow_input.dst]);
-		clientHelper.SetAttribute("DataRate", StringValue("40Gbps"));
+		clientHelper.SetAttribute("DataRate", StringValue("10Gbps"));
 		ApplicationContainer appCon = clientHelper.Install(n.Get(flow_input.src));
 		appCon.Start(Seconds(flow_input.start_time));//使用flow_input.start_time替换Time(0),可读性更好
 		if(flow_input.stop_time>flow_input.start_time){
@@ -178,7 +179,8 @@ void ReadAttackerInput(){
 		attackerf>>node;
 		printf("attacker: %d ",node);
 		attack_nodes.insert(node);
-		no_cc_nodes.insert(node);
+		// if(no_cc_nodes.find(node) != no_cc_nodes.end())
+		// 	no_cc_nodes.insert(node);
 	}
 	printf("\n");
 }//添加attacker node读取函数
@@ -188,7 +190,7 @@ void ScheduleAttackerInputs(){
 		double curr_stop=attacker_start_time+attacker_duration;
 		while(curr_start<simulator_stop_time-0.001){
 			uint32_t port=portNumder[*node][attacker_dst]++;
-			RdmaClientHelper clientHelper(3,serverAddress[*node],serverAddress[attacker_dst],port,100,20000000,has_win?(global_t==1?maxBdp:pairBdp[n.Get(*node)][n.Get(attacker_dst)]):0, global_t==1?maxRtt:pairRtt[*node][attacker_dst]);
+			RdmaClientHelper clientHelper(3,serverAddress[*node],serverAddress[attacker_dst],port,100,1000000,has_win?(global_t==1?maxBdp:pairBdp[n.Get(*node)][n.Get(attacker_dst)]):0, global_t==1?maxRtt:pairRtt[*node][attacker_dst]);
 			ApplicationContainer appCon=clientHelper.Install(n.Get(*node));
 			appCon.Start(Seconds(curr_start));
 			if(curr_stop<simulator_stop_time-0.001){
@@ -1001,6 +1003,16 @@ int main(int argc, char *argv[])
 	}
 
 #if ENABLE_QP
+	// if(!attacker_file.empty()){
+	// 	attackerf.open(attacker_file.c_str());
+	// 	if(attackerf.is_open()){
+	// 		attackerf>>attacker_num>>attacker_dst;
+	// 		ReadAttackerInput();
+	// 		attackerf.close();
+	// 	}else{
+	// 		std::cerr<<"Failed to open attacker file: "<<attacker_file<<"\n";
+	// 	}
+	// }
 	FILE *fct_output = fopen(fct_output_file.c_str(), "w");
 	//
 	// install RDMA driver
@@ -1039,9 +1051,13 @@ int main(int argc, char *argv[])
 				rdmaHw->m_agent_flag = true;
 			else
 				rdmaHw->m_agent_flag = false;
-			if(no_cc_nodes.find(i) != no_cc_nodes.end())
+			if(no_cc_nodes.find(i) != no_cc_nodes.end()){
+				NS_LOG_UNCOND("no cc node is: "<<i<<" ======");
 				rdmaHw->SetAttribute("CcMode", UintegerValue(0));
+			}
+				
 			if(i == analysis_node){
+					NS_LOG_UNCOND("analysis node is: "<<i<<" +++++++");
 			        rdmaHw->m_analysis_flag = true;
 			        rdmaHw->nextHop = &nextHop;
 			        rdmaHw->calfout_path = "mix/find_root_cal.txt";
@@ -1172,6 +1188,9 @@ int main(int argc, char *argv[])
 			std::cerr<<"Failed to open attacker file: "<<attacker_file<<"\n";
 		}
 	}
+	// if (!attacker_file.empty()) {
+	// 	ScheduleAttackerInputs();
+	// }
 
 	topof.close();
 	tracef.close();
