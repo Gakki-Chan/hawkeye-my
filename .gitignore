@@ -15,3 +15,4 @@ mix/teleflowdata_*.txt
 mix/*:Zone.Identifier
 mix/data/*:Zone.Identifier
 实验室项目代码/
+run_hawkeye_gdb.sh

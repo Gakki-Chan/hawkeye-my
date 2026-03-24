@@ -39,7 +39,6 @@ simulation/
 ├─ src/                     # ns-3 及项目修改后的模块源码
 ├─ mix/                     # 普通/攻击场景示例配置与输出目录
 ├─ mix_deadlock/            # deadlock 场景示例配置与输出目录
-├─ run_hawkeye_gdb.sh       # GDB 调试脚本
 ├─ wscript / waf            # ns-3 / waf 构建脚本
 └─ VERSION                  # ns-3 版本号
 ```
@@ -123,13 +122,6 @@ python2 ./waf --run "third mix/config.txt"
 python2 ./waf --run "third_deadlock mix_deadlock/config.txt"
 ```
 
-使用 GDB 调试：
-
-```bash
-chmod +x run_hawkeye_gdb.sh
-./run_hawkeye_gdb.sh third
-./run_hawkeye_gdb.sh third_deadlock
-```
 
 ## 配置文件说明
 
