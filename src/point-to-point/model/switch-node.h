@@ -57,10 +57,6 @@ class SwitchNode : public Node{
 		uint32_t packetNum;		// 32-bit packet_num
 		uint32_t enqQdepth;		// 32-bit enq_q_depth
 		uint32_t pfcPausedPacketNum;	// 32-bit pfc_paused_packet_num
-		uint32_t exportEnqQdepth;
-	uint32_t exportPfcPausedPacketNum;
-	uint32_t exportPacketNum;
-
 		uint32_t totalFwdBytes, totalBwdBytes; 
 		uint32_t ackCount, nackCount;
 		int flowWeight, nodeWeight;//add 
@@ -86,9 +82,6 @@ class SwitchNode : public Node{
 	PortTelemetryData m_portTelemetryData[epochNum][pCnt]; // port telemetry data
 	uint32_t m_portToPortBytes[pCnt][pCnt]; // bytes from port to port
 	uint32_t m_portToPortBytesSlot[pCnt][pCnt][portToPortSlot]; // port to port bytes slot
-	uint64_t m_portExportEnqQdepth[pCnt];
-	uint32_t m_portExportPfcPausedPacketNum[pCnt];
-	uint32_t m_portExportPacketNum[pCnt];
 
 protected:
 	bool m_ecnEnabled;
@@ -108,8 +101,6 @@ private:
 	uint32_t GetEpochIdx();
 	void OutputTelemetry(uint32_t port, uint32_t inport, bool isSignal);
 	bool ShouldTriggerSignal(uint32_t port);
-	void ClearPortExportTelemetry(uint32_t port);
-	void ClearFlowExportTelemetry(uint32_t port);
 
 public:
 	void NotifyPfcEvent(uint32_t ifIndex, uint32_t qIndex, bool isPause);
